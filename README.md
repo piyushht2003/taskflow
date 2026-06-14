@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow
 
-## Getting Started
+TaskFlow is a modern, enterprise-grade project management application designed for teams to streamline their workflows. Built with Next.js 14, it features a highly interactive drag-and-drop Kanban board, isolated workspaces, and robust role-based access control.
 
-First, run the development server:
+## 🚀 Features
 
+- **Multi-Tenant Workspaces:** Complete data isolation. Managers and Admins can switch between distinct workspaces to manage different teams or companies.
+- **Interactive Kanban Board:** Real-time drag-and-drop task management built with `@dnd-kit`.
+- **Role-Based Access Control (RBAC):** Strict permissions modeling for `ADMIN`, `MANAGER`, and `DEVELOPER` roles.
+- **Analytics Dashboard:** Real-time data visualization showing active projects, pending tasks, and team productivity charts.
+- **File & Media Uploads:** Cloudinary integration for user profile pictures and attachments.
+- **Secure Authentication:** Password-based and provider-based authentication using `NextAuth.js`.
+- **Modern UI:** A beautiful, responsive, dark-mode-first aesthetic built with Tailwind CSS and `shadcn/ui`.
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org/) (App Router, Server Actions)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Database ORM:** [Prisma](https://www.prisma.io/)
+- **Database:** SQLite (Easily swappable to PostgreSQL)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/) & Radix UI
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/)
+- **Drag and Drop:** `@dnd-kit/core`
+
+## ⚙️ Quick Start
+
+Follow these steps to run TaskFlow locally on your machine.
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/piyushht2003/taskflow.git
+cd taskflow
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Environment Variables
+Create a `.env` file in the root directory and configure the following environment variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Database
+DATABASE_URL="file:./dev.db"
 
-## Learn More
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate-a-random-secret-key-here"
 
-To learn more about Next.js, take a look at the following resources:
+# Cloudinary (For Profile Pictures)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your_upload_preset"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Setup the Database
+Push the Prisma schema to your SQLite database to create the necessary tables.
+```bash
+npx prisma db push
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Start the Application
+Start the Next.js development server and the separate WebSocket server for real-time features.
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗄️ Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: Next.js App Router pages and Server Actions.
+- `src/components`: Reusable UI components (shadcn, layout elements).
+- `src/features`: Domain-specific components (Kanban board, Settings, Dashboard).
+- `src/lib`: Utility functions and Prisma client initialization.
+- `prisma`: Database schema definition (`schema.prisma`).
+
+## 🛡️ License
+This project is open-source and available under the MIT License.
