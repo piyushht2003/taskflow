@@ -17,6 +17,7 @@ export async function getProjects() {
     orderBy: { updatedAt: "desc" },
     include: {
       owner: { select: { id: true, name: true, image: true } },
+      workspace: { select: { name: true } },
       _count: { select: { tasks: true } }
     }
   });

@@ -47,6 +47,11 @@ export default async function ProjectsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1 pr-8">
+                      {project.workspace && (
+                        <Badge variant="secondary" className="mb-2 text-[10px] uppercase tracking-wider font-semibold">
+                          {project.workspace.name}
+                        </Badge>
+                      )}
                       <CardTitle className="group-hover:text-primary transition-colors">
                         {project.title}
                       </CardTitle>
