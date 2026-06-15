@@ -17,7 +17,19 @@ export async function createWorkspace(name: string) {
     }
   });
 
-  revalidatePath("/");
+  const existingWorkspacesCount = await prisma.workspace.count({
+    where: { ownerId: session.user.id }
+  });
+
+  // If this is their first workspace, migrate all their unassigned projects into it
+  if (existingWorkspacesCount === 1) {
+    await prisma.project.updateMany({
+      where: { ownerId: session.user.id, workspaceId: null },
+      data: { workspaceId: workspace.id }
+    });
+  }
+
+  revalidatePath("/", "layout");
   return workspace;
 }
 
@@ -57,7 +69,7 @@ export async function getActiveWorkspaceId() {
 export async function setActiveWorkspace(workspaceId: string) {
   const cookieStore = await cookies();
   cookieStore.set("workspaceId", workspaceId, { path: "/", maxAge: 60 * 60 * 24 * 30 }); // 30 days
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 export async function deleteWorkspace(id: string) {
@@ -77,5 +89,5 @@ export async function deleteWorkspace(id: string) {
     cookieStore.delete("workspaceId");
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }

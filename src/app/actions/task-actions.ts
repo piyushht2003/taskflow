@@ -39,6 +39,7 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
   });
 
   revalidatePath(`/projects/${task.projectId}/board`);
+  revalidatePath("/dashboard");
   return task;
 }
 
@@ -72,6 +73,7 @@ export async function createTask(data: { title: string, projectId: string, statu
   });
 
   revalidatePath(`/projects/${data.projectId}/board`);
+  revalidatePath("/dashboard");
   return task;
 }
 
@@ -90,7 +92,7 @@ export async function getMyTasks() {
 
 export async function updateTaskDetails(
   taskId: string, 
-  data: { description?: string; assigneeId?: string | null; dueDate?: Date | null }
+  data: { description?: string; assigneeId?: string | null; dueDate?: Date | null; attachments?: string }
 ) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
@@ -117,6 +119,7 @@ export async function updateTaskDetails(
   }
 
   revalidatePath(`/projects/${task.projectId}/board`);
+  revalidatePath("/dashboard");
   return task;
 }
 
@@ -186,6 +189,7 @@ export async function deleteTask(taskId: string) {
   });
 
   revalidatePath(`/projects/${task.projectId}/board`);
+  revalidatePath("/dashboard");
   return task;
 }
 

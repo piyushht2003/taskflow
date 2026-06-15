@@ -34,6 +34,7 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [timeToLog, setTimeToLog] = useState("");
+  const [localAttachments, setLocalAttachments] = useState<string[]>([]);
 
   const formatTime = (minutes: number) => {
     if (!minutes) return "0m";
@@ -45,6 +46,11 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
   useEffect(() => {
     if (task) {
       setDescription(task.description || "");
+      try {
+        setLocalAttachments(JSON.parse(task.attachments || "[]"));
+      } catch(e) {
+        setLocalAttachments([]);
+      }
     }
   }, [task]);
 
@@ -120,6 +126,15 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
     });
   };
 
+  const handleUpload = (url: string) => {
+    const newAttachments = [...localAttachments, url];
+    setLocalAttachments(newAttachments); // Optimistic UI update
+    const updated = JSON.stringify(newAttachments);
+    startTransition(() => {
+      updateTaskDetails(task.id, { attachments: updated }).then(() => onTaskUpdate?.());
+    });
+  };
+
   const isAssignedToMe = task.assigneeId === currentUserId;
 
   return (
@@ -171,18 +186,20 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
                   <h3 className="text-sm font-semibold">Attachments</h3>
                 </div>
                 <div className="space-y-3 mb-3">
-                  {task.attachments.length > 2 ? (
-                    JSON.parse(task.attachments).map((att: string, i: number) => (
+                  {localAttachments.length > 0 ? (
+                    localAttachments.map((att: string, i: number) => (
                       <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/10 hover:bg-secondary/20 transition-colors">
-                        <Paperclip className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium flex-1 truncate">{att}</span>
+                        <Paperclip className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <a href={att} target="_blank" rel="noreferrer" className="text-sm font-medium flex-1 truncate hover:underline text-blue-400">
+                          {att.split('/').pop()}
+                        </a>
                       </div>
                     ))
                   ) : (
                     <p className="text-sm text-muted-foreground italic">No attachments yet.</p>
                   )}
                 </div>
-                <FileUpload onUpload={(url) => console.log("Uploaded file:", url)} />
+                <FileUpload onUpload={handleUpload} />
               </div>
 
               {/* Comments History */}

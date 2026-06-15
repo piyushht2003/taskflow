@@ -101,7 +101,10 @@ export default function RegisterPage() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="role" className="text-white">Account Role</Label>
+          <Label htmlFor="role" className="text-white flex items-center gap-2">
+            <span className="bg-blue-600/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Demo Mode</span>
+            Account Role
+          </Label>
           <select
             id="role"
             name="role"

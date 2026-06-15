@@ -26,10 +26,10 @@ export default async function DashboardPage() {
 
   const activeWorkspaceId = await getActiveWorkspaceId();
 
-  // If Manager but no workspace, they will see 0 projects until they create one
+  // If Manager but no workspace, they will see projects with workspaceId: null
   // If Developer, workspace filtering is ignored since tasks are global to them
-  const workspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { workspaceId: activeWorkspaceId } : { workspaceId: "NONE" };
-  const taskWorkspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : { project: { workspaceId: "NONE" } };
+  const workspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { workspaceId: activeWorkspaceId } : { workspaceId: null };
+  const taskWorkspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : { project: { workspaceId: null } };
 
   const isOverseer = user.role === "ADMIN" || user.role === "MANAGER";
 
@@ -86,7 +86,7 @@ export default async function DashboardPage() {
 
   // Upcoming deadlines
   const upcomingDeadlines = await prisma.task.findMany({
-    where: { dueDate: { not: null }, ...taskWhere },
+    where: { dueDate: { not: null }, status: { not: "COMPLETED" }, ...taskWhere },
     orderBy: { dueDate: "asc" },
     take: 4,
     include: { project: true }

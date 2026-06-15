@@ -1,5 +1,6 @@
 import { getProjectById } from "@/app/actions/project-actions";
 import { getTasksByProjectId } from "@/app/actions/task-actions";
+import { getMyWorkspaces } from "@/app/actions/workspace-actions";
 import { auth } from "@/auth";
 import { KanbanBoard } from "@/features/kanban/components/kanban-board";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ interface PageProps {
 }
 
 import { CreateTaskButton } from "@/features/kanban/components/create-task-button";
+import { ProjectSettingsButton } from "@/features/projects/components/project-settings-button";
 
 export default async function ProjectBoardPage({ params }: PageProps) {
   const { projectId } = await params;
@@ -19,9 +21,10 @@ export default async function ProjectBoardPage({ params }: PageProps) {
   const session = await auth();
   const userRole = session?.user?.role || "DEVELOPER";
 
-  const [project, tasks] = await Promise.all([
+  const [project, tasks, workspaces] = await Promise.all([
     getProjectById(projectId),
-    getTasksByProjectId(projectId)
+    getTasksByProjectId(projectId),
+    userRole !== "DEVELOPER" ? getMyWorkspaces() : Promise.resolve([])
   ]);
 
   if (!project) {
@@ -52,10 +55,7 @@ export default async function ProjectBoardPage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="secondary" size="sm" className="gap-2">
-            <Settings className="w-4 h-4" />
-            Settings
-          </Button>
+          <ProjectSettingsButton project={project} userRole={userRole} workspaces={workspaces} />
           <CreateTaskButton projectId={projectId} />
         </div>
       </div>
