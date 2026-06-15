@@ -8,7 +8,7 @@ import { FolderKanban, CheckSquare, Calendar, Users } from "lucide-react";
 import Link from "next/link";
 import { CreateProjectButton } from "./create-project-button";
 import { DeleteProjectButton } from "./delete-project-button";
-import { getWorkspaces } from "@/app/actions/workspace-actions";
+import { getMyWorkspaces } from "@/app/actions/workspace-actions";
 
 export default async function ProjectsPage() {
   const session = await auth();
@@ -17,7 +17,7 @@ export default async function ProjectsPage() {
   }
 
   const projects = await getProjects();
-  const workspaces = await getWorkspaces();
+  const workspaces = await getMyWorkspaces();
   const canCreate = session.user.role === "ADMIN" || session.user.role === "MANAGER";
 
   return (
