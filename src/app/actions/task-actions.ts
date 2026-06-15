@@ -24,7 +24,7 @@ export async function getTasksByProjectId(projectId: string) {
 
 export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   const task = await prisma.task.update({
     where: { id: taskId },
@@ -45,7 +45,7 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
 
 export async function createTask(data: { title: string, projectId: string, status: TaskStatus, assigneeId?: string | null }) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   const task = await prisma.task.create({
     data: {
@@ -95,7 +95,7 @@ export async function updateTaskDetails(
   data: { description?: string; assigneeId?: string | null; dueDate?: Date | null; attachments?: string }
 ) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   // Prevent developers from changing the assignee
   if (data.assigneeId !== undefined && session.user.role === "DEVELOPER") {
@@ -170,7 +170,7 @@ export async function getAssignableUsers() {
 
 export async function deleteTask(taskId: string) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   if (session.user.role === "DEVELOPER") {
     throw new Error("Only Managers and Admins can delete tasks.");
@@ -195,7 +195,7 @@ export async function deleteTask(taskId: string) {
 
 export async function logTime(taskId: string, minutes: number) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (!task) throw new Error("Task not found");
