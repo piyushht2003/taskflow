@@ -8,6 +8,7 @@ import { FolderKanban, CheckSquare, Calendar, Users } from "lucide-react";
 import Link from "next/link";
 import { CreateProjectButton } from "./create-project-button";
 import { DeleteProjectButton } from "./delete-project-button";
+import { getWorkspaces } from "@/app/actions/workspace-actions";
 
 export default async function ProjectsPage() {
   const session = await auth();
@@ -16,6 +17,7 @@ export default async function ProjectsPage() {
   }
 
   const projects = await getProjects();
+  const workspaces = await getWorkspaces();
   const canCreate = session.user.role === "ADMIN" || session.user.role === "MANAGER";
 
   return (
@@ -25,7 +27,7 @@ export default async function ProjectsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
           <p className="text-muted-foreground mt-1">Manage and access all your workspaces.</p>
         </div>
-        {canCreate && <CreateProjectButton />}
+        {canCreate && <CreateProjectButton workspaces={workspaces} />}
       </div>
 
       {projects.length === 0 ? (
@@ -35,7 +37,7 @@ export default async function ProjectsPage() {
           <p className="text-sm text-muted-foreground mt-1 mb-6 max-w-md">
             Get started by creating a new project to organize your team&apos;s tasks and workflows.
           </p>
-          {canCreate && <CreateProjectButton />}
+          {canCreate && <CreateProjectButton workspaces={workspaces} />}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

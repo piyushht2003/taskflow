@@ -34,7 +34,7 @@ export async function getProjectById(id: string) {
   });
 }
 
-export async function createProject(title: string, description?: string, deadline?: Date) {
+export async function createProject(title: string, description?: string, workspaceId?: string | null, deadline?: Date) {
   const session = await auth();
   if (!session?.user || !session.user.id) {
     throw new Error("Unauthorized");
@@ -44,7 +44,7 @@ export async function createProject(title: string, description?: string, deadlin
     throw new Error("Developers cannot create projects. Please contact your Manager.");
   }
 
-  const workspaceId = await getActiveWorkspaceId();
+  const finalWorkspaceId = workspaceId !== undefined ? workspaceId : await getActiveWorkspaceId();
 
   const project = await prisma.project.create({
     data: {
@@ -52,7 +52,7 @@ export async function createProject(title: string, description?: string, deadlin
       description,
       deadline,
       ownerId: session.user.id,
-      workspaceId,
+      workspaceId: finalWorkspaceId,
     }
   });
 

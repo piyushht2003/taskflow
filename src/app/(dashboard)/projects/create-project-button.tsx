@@ -18,7 +18,12 @@ import {
 } from "@/components/ui/dialog";
 import { createProject } from "@/app/actions/project-actions";
 
-export function CreateProjectButton() {
+interface Workspace {
+  id: string;
+  name: string;
+}
+
+export function CreateProjectButton({ workspaces = [] }: { workspaces?: Workspace[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,9 +37,10 @@ export function CreateProjectButton() {
     const formData = new FormData(e.currentTarget);
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
+    const workspaceId = formData.get("workspaceId") as string;
 
     try {
-      const project = await createProject(title, description);
+      const project = await createProject(title, description, workspaceId || null);
       setOpen(false);
       // Redirect to the new project's board
       router.push(`/projects/${project.id}/board`);
@@ -67,6 +73,19 @@ export function CreateProjectButton() {
           <div className="space-y-2">
             <Label htmlFor="title">Project Title</Label>
             <Input id="title" name="title" placeholder="e.g. Q3 Marketing Campaign" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="workspaceId">Workspace</Label>
+            <select
+              id="workspaceId"
+              name="workspaceId"
+              className="flex h-10 w-full rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+            >
+              <option value="">No Workspace</option>
+              {workspaces.map((ws) => (
+                <option key={ws.id} value={ws.id}>{ws.name}</option>
+              ))}
+            </select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
