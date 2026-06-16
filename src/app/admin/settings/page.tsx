@@ -5,6 +5,7 @@ import { ProfileForm } from "@/features/settings/components/profile-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfilePictureUpload } from "@/features/settings/components/profile-picture-upload";
 import { Badge } from "@/components/ui/badge";
+import { ThemeSettings } from "@/features/settings/components/theme-settings";
 import { SystemSettingsForm } from "./system-settings-form";
 import { getSystemSettings } from "@/actions/admin";
 
@@ -73,11 +74,7 @@ export default async function SettingsPage() {
                 <CardTitle className="text-lg">Preferences</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 bg-secondary/20 rounded-lg border border-border/50">
-                  <h4 className="font-medium text-sm mb-1">Theme</h4>
-                  <p className="text-xs text-muted-foreground mb-3">TaskFlow currently uses a beautiful native light mode by default.</p>
-                  <Badge variant="secondary">Light Mode Enabled</Badge>
-                </div>
+                <ThemeSettings />
 
                 <div className="p-4 bg-secondary/20 rounded-lg border border-border/50">
                   <h4 className="font-medium text-sm mb-1">Notifications</h4>

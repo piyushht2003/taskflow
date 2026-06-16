@@ -89,60 +89,109 @@ export function HeroSection() {
             </div>
           </div>
           {/* Main App Area */}
-          <div className="grid grid-cols-12 gap-4 p-4 h-[400px]">
+          <div className="grid grid-cols-12 gap-4 p-4 h-[450px]">
             {/* Sidebar */}
             <div className="col-span-3 hidden md:flex flex-col gap-2 border-r border-neutral-200 dark:border-white/5 pr-4">
-              <div className="h-8 bg-neutral-200 dark:bg-white/5 rounded w-3/4 mb-4"></div>
-              <div className="h-6 bg-neutral-100 dark:bg-white/5 rounded w-full"></div>
-              <div className="h-6 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 dark:border-blue-500/30 rounded w-5/6"></div>
-              <div className="h-6 bg-neutral-100 dark:bg-white/5 rounded w-4/5"></div>
-              <div className="h-6 bg-neutral-100 dark:bg-white/5 rounded w-full mt-auto"></div>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-6 h-6 rounded bg-neutral-900 dark:bg-white flex-shrink-0"></div>
+                <div className="h-5 bg-neutral-200 dark:bg-white/10 rounded w-24"></div>
+              </div>
+              <div className="h-8 bg-blue-500/10 border border-blue-500/20 rounded-md w-full flex items-center px-3 gap-2">
+                <div className="w-4 h-4 rounded bg-blue-500/50"></div>
+                <div className="h-3 bg-blue-500/40 rounded w-16"></div>
+              </div>
+              <div className="h-8 hover:bg-neutral-100 dark:hover:bg-white/5 rounded-md w-full flex items-center px-3 gap-2">
+                <div className="w-4 h-4 rounded bg-neutral-300 dark:bg-white/20"></div>
+                <div className="h-3 bg-neutral-200 dark:bg-white/10 rounded w-14"></div>
+              </div>
+              <div className="h-8 hover:bg-neutral-100 dark:hover:bg-white/5 rounded-md w-full flex items-center px-3 gap-2">
+                <div className="w-4 h-4 rounded bg-neutral-300 dark:bg-white/20"></div>
+                <div className="h-3 bg-neutral-200 dark:bg-white/10 rounded w-12"></div>
+              </div>
+              <div className="h-8 hover:bg-neutral-100 dark:hover:bg-white/5 rounded-md w-full flex items-center px-3 gap-2">
+                <div className="w-4 h-4 rounded bg-neutral-300 dark:bg-white/20"></div>
+                <div className="h-3 bg-neutral-200 dark:bg-white/10 rounded w-20"></div>
+              </div>
+              <div className="mt-auto">
+                <div className="h-8 hover:bg-neutral-100 dark:hover:bg-white/5 rounded-md w-full flex items-center px-3 gap-2">
+                  <div className="w-6 h-6 rounded-full bg-neutral-300 dark:bg-white/20"></div>
+                  <div className="flex flex-col gap-1">
+                    <div className="h-2 bg-neutral-200 dark:bg-white/20 rounded w-20"></div>
+                    <div className="h-1.5 bg-neutral-200 dark:bg-white/10 rounded w-12"></div>
+                  </div>
+                </div>
+              </div>
             </div>
+            
             {/* Content Area */}
             <div className="col-span-12 md:col-span-9 flex flex-col gap-4">
               {/* Header */}
-              <div className="flex justify-between items-center">
-                <div className="h-8 bg-neutral-200 dark:bg-white/10 rounded w-1/3"></div>
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-white/10"></div>
-                  <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-white/10"></div>
+              <div className="flex justify-between items-center pb-2 border-b border-neutral-100 dark:border-white/5">
+                <div className="h-6 bg-neutral-200 dark:bg-white/10 rounded w-32"></div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-8 w-48 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 rounded-md"></div>
                   <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-white/10"></div>
                 </div>
               </div>
-              {/* Kanban columns */}
+              
+              {/* Stats Row */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4">
+                  <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-24 mb-3"></div>
+                  <div className="h-8 bg-neutral-300 dark:bg-white/30 rounded w-8 mb-1"></div>
+                  <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-32"></div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4">
+                  <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-20 mb-3"></div>
+                  <div className="h-8 bg-neutral-300 dark:bg-white/30 rounded w-8 mb-1"></div>
+                  <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-28"></div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4">
+                  <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-24 mb-3"></div>
+                  <div className="h-8 bg-neutral-300 dark:bg-white/30 rounded w-8 mb-1"></div>
+                  <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-32"></div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4">
+                  <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-24 mb-3"></div>
+                  <div className="h-8 bg-neutral-300 dark:bg-white/30 rounded w-8 mb-1"></div>
+                  <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-32"></div>
+                </div>
+              </div>
+
+              {/* Main Content Areas */}
               <div className="grid grid-cols-3 gap-4 h-full">
-                {/* Column 1 */}
-                <div className="bg-neutral-50 dark:bg-white/5 rounded-lg p-3 flex flex-col gap-3">
-                  <div className="h-4 bg-neutral-200 dark:bg-white/10 rounded w-1/2 mb-2"></div>
-                  <div className="bg-white dark:bg-neutral-900 rounded p-3 border border-neutral-200 dark:border-white/5 h-24 shadow-sm">
-                    <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-3/4 mb-4"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-full mb-2"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-2/3"></div>
-                  </div>
-                  <div className="bg-white dark:bg-neutral-900 rounded p-3 border border-neutral-200 dark:border-white/5 h-24 shadow-sm">
-                    <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-1/2 mb-4"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-full"></div>
-                  </div>
-                </div>
-                {/* Column 2 */}
-                <div className="bg-neutral-50 dark:bg-white/5 rounded-lg p-3 flex flex-col gap-3">
-                  <div className="h-4 bg-neutral-200 dark:bg-white/10 rounded w-2/3 mb-2"></div>
-                  <div className="bg-white dark:bg-neutral-900 rounded p-3 border border-blue-500/30 h-32 relative overflow-hidden shadow-sm">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                    <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-4/5 mb-4"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-full mb-2"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-full mb-2"></div>
-                    <div className="h-2 bg-neutral-100 dark:bg-white/10 rounded w-1/2"></div>
+                {/* Large Chart Area */}
+                <div className="col-span-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4 flex flex-col">
+                  <div className="h-4 bg-neutral-200 dark:bg-white/20 rounded w-32 mb-6"></div>
+                  <div className="flex-1 relative border-l border-b border-neutral-100 dark:border-white/10">
+                    <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full text-blue-500 preserve-aspect-ratio-none" preserveAspectRatio="none">
+                      <path d="M0,80 L20,80 L40,80 L60,10 L80,10 L100,10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                      <circle cx="20" cy="80" r="2" fill="currentColor" />
+                      <circle cx="40" cy="80" r="2" fill="currentColor" />
+                      <circle cx="60" cy="10" r="2" fill="currentColor" />
+                      <circle cx="80" cy="10" r="2" fill="currentColor" />
+                    </svg>
                   </div>
                 </div>
-                {/* Column 3 */}
-                <div className="bg-neutral-50 dark:bg-white/5 rounded-lg p-3 flex flex-col gap-3 opacity-70 dark:opacity-50">
-                  <div className="h-4 bg-neutral-200 dark:bg-white/10 rounded w-1/3 mb-2"></div>
-                  <div className="bg-white dark:bg-neutral-900 rounded p-3 border border-neutral-200 dark:border-white/5 h-20 shadow-sm">
-                    <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-3/4 mb-4 line-through"></div>
+                
+                {/* Small Status Area */}
+                <div className="col-span-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4 flex flex-col items-center justify-center">
+                  <div className="w-24 h-24 rounded-full border-[10px] border-neutral-100 dark:border-neutral-800 relative">
+                    <div className="absolute inset-0 rounded-full border-[10px] border-blue-500" style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 50%)" }}></div>
+                    <div className="absolute inset-0 flex items-center justify-center flex-col">
+                      <div className="h-4 bg-neutral-300 dark:bg-white/30 rounded w-6"></div>
+                      <div className="h-2 bg-neutral-200 dark:bg-white/10 rounded w-8 mt-1"></div>
+                    </div>
                   </div>
-                  <div className="bg-white dark:bg-neutral-900 rounded p-3 border border-neutral-200 dark:border-white/5 h-20 shadow-sm">
-                    <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-1/2 mb-4 line-through"></div>
+                  <div className="mt-6 w-full space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div><div className="h-2 bg-neutral-200 dark:bg-white/10 rounded w-16"></div></div>
+                      <div className="h-2 bg-neutral-200 dark:bg-white/20 rounded w-4"></div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div><div className="h-2 bg-neutral-200 dark:bg-white/10 rounded w-12"></div></div>
+                      <div className="h-2 bg-neutral-200 dark:bg-white/20 rounded w-4"></div>
+                    </div>
                   </div>
                 </div>
               </div>
