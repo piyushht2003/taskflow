@@ -4,9 +4,21 @@ import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AdminSidebar } from "./admin-sidebar";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 
 export async function AdminHeader() {
   const session = await auth();
+  const user = session?.user;
+
+  let dbUser = null;
+  if (user?.id) {
+    dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { image: true, name: true }
+    });
+  }
+
+  const displayUser = user ? { ...user, ...dbUser } : undefined;
 
   return (
     <header className="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 gap-4 sticky top-0 z-10">
@@ -22,7 +34,7 @@ export async function AdminHeader() {
         </Sheet>
         <span className="truncate md:hidden">Admin Panel</span>
       </div>
-      {session?.user && <UserMenu user={session.user} />}
+      {displayUser && <UserMenu user={displayUser} />}
     </header>
   );
 }
