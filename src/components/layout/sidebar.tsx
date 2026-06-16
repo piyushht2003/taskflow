@@ -22,7 +22,7 @@ import { SidebarNav } from "./sidebar-nav";
 
 export async function Sidebar() {
   const session = await auth();
-  const role = session?.user?.role || "DEVELOPER";
+  const platformRole = session?.user?.platformRole || "USER";
 
   let workspaces: any[] = [];
   let activeWorkspaceId: string | null = null;
@@ -32,9 +32,7 @@ export async function Sidebar() {
     unreadCount = await prisma.notification.count({
       where: { userId: session.user.id, isRead: false }
     });
-  }
 
-  if (role !== "DEVELOPER") {
     [workspaces, activeWorkspaceId] = await Promise.all([
       getMyWorkspaces(),
       getActiveWorkspaceId()
@@ -53,20 +51,17 @@ export async function Sidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-6">
-        <SidebarNav role={role} unreadCount={unreadCount} />
+        <SidebarNav platformRole={platformRole} unreadCount={unreadCount} />
 
-        {role !== "DEVELOPER" && (
-          <div>
-            <h4 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Workspaces
-            </h4>
-            <WorkspaceSwitcher 
-              workspaces={workspaces} 
-              activeWorkspaceId={activeWorkspaceId} 
-              role={role} 
-            />
-          </div>
-        )}
+        <div>
+          <h4 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Workspaces
+          </h4>
+          <WorkspaceSwitcher 
+            workspaces={workspaces} 
+            activeWorkspaceId={activeWorkspaceId} 
+          />
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Users, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
   params: Promise<{ projectId: string }>;
@@ -19,12 +20,28 @@ export default async function ProjectBoardPage({ params }: PageProps) {
   const { projectId } = await params;
   
   const session = await auth();
-  const userRole = session?.user?.role || "DEVELOPER";
+  if (!session?.user?.id) notFound();
 
-  const [project, tasks, workspaces] = await Promise.all([
-    getProjectById(projectId),
+  const project = await getProjectById(projectId);
+  
+  if (!project) {
+    notFound();
+  }
+
+  const member = await prisma.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId: session.user.id,
+        workspaceId: project.workspaceId
+      }
+    }
+  });
+
+  const userRole = member?.role || "DEVELOPER";
+
+  const [tasks, workspaces] = await Promise.all([
     getTasksByProjectId(projectId),
-    userRole !== "DEVELOPER" ? getMyWorkspaces() : Promise.resolve([])
+    (userRole === "ADMIN" || userRole === "MANAGER") ? getMyWorkspaces() : Promise.resolve([])
   ]);
 
   if (!project) {
@@ -41,12 +58,7 @@ export default async function ProjectBoardPage({ params }: PageProps) {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{project.title}</h1>
             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-              <div className="flex -space-x-2">
-                <Avatar className="w-6 h-6 border-2 border-background">
-                  <AvatarImage src={project.owner.image || ""} />
-                  <AvatarFallback>{project.owner.name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </div>
+              {/* Project Owner Avatar Removed for Workspace Isolation */}
               <span className="flex items-center gap-1 cursor-pointer hover:text-foreground">
                 <Users className="w-3.5 h-3.5" /> Team Board
               </span>

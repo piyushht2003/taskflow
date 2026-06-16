@@ -15,11 +15,11 @@ import {
 } from "lucide-react";
 
 interface SidebarNavProps {
-  role: string;
+  platformRole: string;
   unreadCount: number;
 }
 
-export function SidebarNav({ role, unreadCount }: SidebarNavProps) {
+export function SidebarNav({ platformRole, unreadCount }: SidebarNavProps) {
   const pathname = usePathname();
 
   const navItems = [
@@ -33,7 +33,7 @@ export function SidebarNav({ role, unreadCount }: SidebarNavProps) {
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  if (role === "ADMIN") {
+  if (platformRole === "SUPER_ADMIN") {
     navItems.push({ name: "Admin UI", href: "/admin", icon: ShieldAlert });
   }
 

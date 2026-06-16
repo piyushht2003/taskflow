@@ -8,18 +8,15 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
-  role: z.enum(["ADMIN", "MANAGER", "DEVELOPER"]).default("DEVELOPER"),
 })
 
 export async function registerUser(formData: FormData) {
   try {
-    console.log("DB URL IS:", process.env.DATABASE_URL)
     const name = formData.get("name")
     const email = formData.get("email")
     const password = formData.get("password")
-    const role = formData.get("role") || "DEVELOPER"
 
-    const validatedData = registerSchema.safeParse({ name, email, password, role })
+    const validatedData = registerSchema.safeParse({ name, email, password })
 
     if (!validatedData.success) {
       return {
@@ -42,7 +39,6 @@ export async function registerUser(formData: FormData) {
         name: validatedData.data.name,
         email: validatedData.data.email,
         password: hashedPassword,
-        role: validatedData.data.role,
       },
     })
 

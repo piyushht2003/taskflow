@@ -1,7 +1,23 @@
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
-export function GlobalLayout({ children }: { children: React.ReactNode }) {
+export async function GlobalLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  if (session.user.platformRole !== "SUPER_ADMIN") {
+    const memberships = await prisma.workspaceMember.count({
+      where: { userId: session.user.id }
+    });
+
+    if (memberships === 0) {
+      redirect("/onboarding");
+    }
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
       <div className="hidden md:flex h-full">

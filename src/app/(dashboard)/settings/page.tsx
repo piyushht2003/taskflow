@@ -41,7 +41,7 @@ export default async function SettingsPage() {
                   <p className="text-muted-foreground">{dbUser.email}</p>
                   <div className="mt-2">
                     <Badge variant="outline" className="bg-secondary/50">
-                      {dbUser.role} Account
+                      {dbUser.platformRole} Account
                     </Badge>
                   </div>
                 </div>

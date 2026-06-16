@@ -9,9 +9,9 @@ export default async function CalendarPage() {
   if (!session?.user) redirect("/login");
 
   const activeWorkspaceId = await getActiveWorkspaceId();
-  const taskWorkspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : { project: { workspaceId: "NONE" } };
+  if (!activeWorkspaceId) redirect("/onboarding");
 
-  // Fetch all tasks with due dates
+  const taskWorkspaceFilter = { workspaceId: activeWorkspaceId };
   const tasks = await prisma.task.findMany({
     where: {
       dueDate: { not: null },

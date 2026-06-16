@@ -10,8 +10,9 @@ export default async function AnalyticsPage() {
   if (!session?.user) redirect("/login");
 
   const activeWorkspaceId = await getActiveWorkspaceId();
-  const taskWorkspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : { project: { workspaceId: "NONE" } };
+  if (!activeWorkspaceId) redirect("/onboarding");
 
+  const taskWorkspaceFilter = { workspaceId: activeWorkspaceId };
   const [tasksByPriority, tasksByStatus, tasksByDate] = await Promise.all([
     prisma.task.groupBy({
       by: ['priority'],

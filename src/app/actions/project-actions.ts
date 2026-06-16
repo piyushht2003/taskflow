@@ -4,19 +4,23 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { getActiveWorkspaceId } from "./workspace-actions";
+import { hasWorkspacePermission, requireWorkspacePermission } from "@/lib/permissions";
 
 export async function getProjects() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  const workspaceId = session.user.role !== "DEVELOPER" ? await getActiveWorkspaceId() : undefined;
-  const whereClause = workspaceId ? { workspaceId } : workspaceId === null ? { workspaceId: null } : {};
+  const workspaceId = await getActiveWorkspaceId();
+  if (!workspaceId) return [];
+
+  // Verify membership implicitly
+  const hasAccess = await hasWorkspacePermission(workspaceId, "DESIGNER");
+  if (!hasAccess) return [];
 
   return await prisma.project.findMany({
-    where: whereClause,
+    where: { workspaceId },
     orderBy: { updatedAt: "desc" },
     include: {
-      owner: { select: { id: true, name: true, image: true } },
       workspace: { select: { name: true } },
       _count: { select: { tasks: true } }
     }
@@ -27,39 +31,38 @@ export async function getProjectById(id: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  return await prisma.project.findUnique({
-    where: { id },
-    include: {
-      owner: { select: { id: true, name: true, image: true } },
-    }
+  const project = await prisma.project.findUnique({
+    where: { id }
   });
+
+  if (!project) return null;
+  await requireWorkspacePermission(project.workspaceId, "DESIGNER");
+
+  return project;
 }
 
-export async function createProject(title: string, description?: string, workspaceId?: string | null, deadline?: Date) {
+export async function createProject(title: string, description?: string, targetWorkspaceId?: string | null, deadline?: Date) {
   const session = await auth();
-  if (!session?.user || !session.user.id) {
-    throw new Error("Unauthorized");
-  }
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
   
-  if (session.user.role === "DEVELOPER") {
-    throw new Error("Developers cannot create projects. Please contact your Manager.");
-  }
+  const workspaceId = targetWorkspaceId || await getActiveWorkspaceId();
+  if (!workspaceId) throw new Error("No active workspace selected");
 
-  const finalWorkspaceId = workspaceId !== undefined ? workspaceId : await getActiveWorkspaceId();
+  await requireWorkspacePermission(workspaceId, "MANAGER");
 
   const project = await prisma.project.create({
     data: {
       title,
       description,
       deadline,
-      ownerId: session.user.id,
-      workspaceId: finalWorkspaceId,
+      workspaceId,
     }
   });
 
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId,
       action: `created project "${project.title}"`
     }
   });
@@ -71,21 +74,21 @@ export async function createProject(title: string, description?: string, workspa
 
 export async function deleteProject(id: string) {
   const session = await auth();
-  if (!session?.user || !session.user.id) {
-    throw new Error("Unauthorized");
-  }
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
   
-  if (session.user.role === "DEVELOPER") {
-    throw new Error("Developers cannot delete projects. Please contact your Manager.");
-  }
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project) throw new Error("Project not found");
 
-  const project = await prisma.project.delete({
+  await requireWorkspacePermission(project.workspaceId, "MANAGER");
+
+  await prisma.project.delete({
     where: { id }
   });
 
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: project.workspaceId,
       action: `deleted project "${project.title}"`
     }
   });
@@ -95,17 +98,21 @@ export async function deleteProject(id: string) {
   return project;
 }
 
-export async function updateProject(id: string, data: { title?: string; description?: string; deadline?: Date | null; workspaceId?: string | null }) {
+export async function updateProject(id: string, data: { title?: string; description?: string; deadline?: Date | null; workspaceId?: string }) {
   const session = await auth();
-  if (!session?.user || !session.user.id) {
-    throw new Error("Unauthorized");
-  }
+  if (!session?.user || !session.user.id) throw new Error("Unauthorized");
   
-  if (session.user.role === "DEVELOPER") {
-    throw new Error("Developers cannot edit projects. Please contact your Manager.");
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project) throw new Error("Project not found");
+
+  await requireWorkspacePermission(project.workspaceId, "MANAGER");
+
+  // If moving to a new workspace, verify permissions there too
+  if (data.workspaceId && data.workspaceId !== project.workspaceId) {
+    await requireWorkspacePermission(data.workspaceId, "MANAGER");
   }
 
-  const project = await prisma.project.update({
+  const updatedProject = await prisma.project.update({
     where: { id },
     data
   });
@@ -113,7 +120,8 @@ export async function updateProject(id: string, data: { title?: string; descript
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
-      action: `updated project "${project.title}" settings`
+      workspaceId: updatedProject.workspaceId,
+      action: `updated project "${updatedProject.title}" settings`
     }
   });
 
@@ -121,5 +129,5 @@ export async function updateProject(id: string, data: { title?: string; descript
   revalidatePath("/dashboard");
   revalidatePath("/projects");
   revalidatePath(`/projects/${id}/board`);
-  return project;
+  return updatedProject;
 }

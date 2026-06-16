@@ -23,12 +23,11 @@ interface Workspace {
 interface WorkspaceSwitcherProps {
   workspaces: Workspace[];
   activeWorkspaceId: string | null;
-  role: string;
 }
 
 import { useRouter } from "next/navigation";
 
-export function WorkspaceSwitcher({ workspaces, activeWorkspaceId, role }: WorkspaceSwitcherProps) {
+export function WorkspaceSwitcher({ workspaces, activeWorkspaceId }: WorkspaceSwitcherProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,33 +91,29 @@ export function WorkspaceSwitcher({ workspaces, activeWorkspaceId, role }: Works
             >
               <div className={`w-2 h-2 rounded-full ${color} shrink-0`} />
               <span className="font-medium text-sm flex-1 truncate">{ws.name}</span>
-              {role !== "DEVELOPER" && (
-                <button
-                  onClick={(e) => handleDelete(e, ws.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive hover:text-destructive-foreground rounded transition-all"
-                  title="Delete Workspace"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              )}
+              <button
+                onClick={(e) => handleDelete(e, ws.id)}
+                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive hover:text-destructive-foreground rounded transition-all"
+                title="Delete Workspace"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
             </div>
           );
         })}
         
-        {workspaces.length === 0 && role !== "DEVELOPER" && (
+        {workspaces.length === 0 && (
           <p className="text-xs text-muted-foreground px-3 py-2 italic">No workspaces yet.</p>
         )}
 
-        {role !== "DEVELOPER" && (
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3 px-3 text-muted-foreground hover:text-foreground mt-2"
-            onClick={() => setOpen(true)}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="font-medium text-sm">New Workspace</span>
-          </Button>
-        )}
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start gap-3 px-3 text-muted-foreground hover:text-foreground mt-2"
+          onClick={() => setOpen(true)}
+        >
+          <Plus className="w-4 h-4" />
+          <span className="font-medium text-sm">New Workspace</span>
+        </Button>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

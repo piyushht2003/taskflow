@@ -52,32 +52,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token.sub && session.user) {
         session.user.id = token.sub
       }
-      if (token.role && session.user) {
-        session.user.role = token.role as "ADMIN" | "MANAGER" | "DEVELOPER"
+      if (token.platformRole && session.user) {
+        session.user.platformRole = token.platformRole as "SUPER_ADMIN" | "USER"
       }
       return session
     },
     async jwt({ token, user, account }) {
       if (user) {
-        token.role = (user as { role?: string }).role
+        let platformRole = (user as { platformRole?: string }).platformRole || "USER";
 
-        if (account?.provider === "google") {
-          try {
-            const { cookies } = await import("next/headers")
-            const cookieStore = await cookies()
-            const pendingRole = cookieStore.get("pending_role")?.value
-
-            if (pendingRole && ["ADMIN", "MANAGER", "DEVELOPER"].includes(pendingRole)) {
-              await prisma.user.update({
-                where: { id: user.id },
-                data: { role: pendingRole }
-              })
-              token.role = pendingRole
-            }
-          } catch (error) {
-            console.error("Failed to read cookie in NextAuth", error)
-          }
+        const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || "taskflow@admin.com";
+        if (user.email === superAdminEmail && platformRole !== "SUPER_ADMIN") {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { platformRole: "SUPER_ADMIN" }
+          });
+          platformRole = "SUPER_ADMIN";
         }
+
+        token.platformRole = platformRole;
       }
       return token
     },

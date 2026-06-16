@@ -78,7 +78,7 @@ export default async function TasksPage() {
                       <td className="px-4 py-4 text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <FolderKanban className="w-4 h-4" />
-                          <span className="truncate max-w-[150px]">{task.project.title}</span>
+                          <span className="truncate max-w-[150px]">{task.project?.title || "No Project"}</span>
                         </div>
                       </td>
                       <td className="px-4 py-4">

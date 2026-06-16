@@ -4,13 +4,21 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { TaskStatus } from "@/types";
+import { getActiveWorkspaceId } from "./workspace-actions";
+import { hasWorkspacePermission, requireWorkspacePermission } from "@/lib/permissions";
 
 export async function getTasksByProjectId(projectId: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
+  const project = await prisma.project.findUnique({ where: { id: projectId } });
+  if (!project) return [];
+
+  const hasAccess = await hasWorkspacePermission(project.workspaceId, "DESIGNER");
+  if (!hasAccess) return [];
+
   return await prisma.task.findMany({
-    where: { projectId },
+    where: { projectId, workspaceId: project.workspaceId },
     include: {
       assignee: { select: { id: true, name: true, image: true } },
       comments: { 
@@ -26,7 +34,12 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
-  const task = await prisma.task.update({
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("Task not found");
+
+  await requireWorkspacePermission(task.workspaceId, "DESIGNER");
+
+  const updatedTask = await prisma.task.update({
     where: { id: taskId },
     data: { status: newStatus }
   });
@@ -34,23 +47,32 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: task.workspaceId,
       action: `moved task "${task.title}" to ${newStatus}`
     }
   });
 
-  revalidatePath(`/projects/${task.projectId}/board`);
+  if (updatedTask.projectId) {
+    revalidatePath(`/projects/${updatedTask.projectId}/board`);
+  }
   revalidatePath("/dashboard");
-  return task;
+  return updatedTask;
 }
 
 export async function createTask(data: { title: string, projectId: string, status: TaskStatus, assigneeId?: string | null }) {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
+  const project = await prisma.project.findUnique({ where: { id: data.projectId } });
+  if (!project) throw new Error("Project not found");
+
+  await requireWorkspacePermission(project.workspaceId, "DEVELOPER");
+
   const task = await prisma.task.create({
     data: {
       title: data.title,
       projectId: data.projectId,
+      workspaceId: project.workspaceId,
       status: data.status,
       assigneeId: data.assigneeId,
     }
@@ -68,6 +90,7 @@ export async function createTask(data: { title: string, projectId: string, statu
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: project.workspaceId,
       action: `created task "${task.title}"`
     }
   });
@@ -81,8 +104,11 @@ export async function getMyTasks() {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
+  const workspaceId = await getActiveWorkspaceId();
+  if (!workspaceId) return [];
+
   return await prisma.task.findMany({
-    where: { assigneeId: session.user.id },
+    where: { assigneeId: session.user.id, workspaceId },
     include: {
       project: { select: { id: true, title: true } },
     },
@@ -97,19 +123,24 @@ export async function updateTaskDetails(
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
-  // Prevent developers from changing the assignee
-  if (data.assigneeId !== undefined && session.user.role === "DEVELOPER") {
-    throw new Error("Developers cannot assign tasks. Contact your Manager.");
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("Task not found");
+
+  // If trying to change assignee, require MANAGER
+  if (data.assigneeId !== undefined && data.assigneeId !== task.assigneeId) {
+    await requireWorkspacePermission(task.workspaceId, "MANAGER");
+  } else {
+    // Otherwise DEVELOPER is enough
+    await requireWorkspacePermission(task.workspaceId, "DEVELOPER");
   }
 
-  const task = await prisma.task.update({
+  const updatedTask = await prisma.task.update({
     where: { id: taskId },
     data,
     include: { project: true }
   });
 
-  if (data.assigneeId && data.assigneeId !== "UNASSIGNED") {
-    // Notify the new assignee
+  if (data.assigneeId && data.assigneeId !== "UNASSIGNED" && data.assigneeId !== task.assigneeId) {
     await prisma.notification.create({
       data: {
         userId: data.assigneeId,
@@ -118,9 +149,11 @@ export async function updateTaskDetails(
     });
   }
 
-  revalidatePath(`/projects/${task.projectId}/board`);
+  if (updatedTask.projectId) {
+    revalidatePath(`/projects/${updatedTask.projectId}/board`);
+  }
   revalidatePath("/dashboard");
-  return task;
+  return updatedTask;
 }
 
 export async function addComment(taskId: string, content: string) {
@@ -130,10 +163,13 @@ export async function addComment(taskId: string, content: string) {
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (!task) throw new Error("Task not found");
 
+  await requireWorkspacePermission(task.workspaceId, "DESIGNER");
+
   const comment = await prisma.comment.create({
     data: {
       content,
       taskId,
+      workspaceId: task.workspaceId,
       userId: session.user.id
     }
   });
@@ -150,11 +186,14 @@ export async function addComment(taskId: string, content: string) {
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: task.workspaceId,
       action: `commented on "${task.title}"`
     }
   });
 
-  revalidatePath(`/projects/${task.projectId}/board`);
+  if (task.projectId) {
+    revalidatePath(`/projects/${task.projectId}/board`);
+  }
   return comment;
 }
 
@@ -162,33 +201,42 @@ export async function getAssignableUsers() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  return await prisma.user.findMany({
-    select: { id: true, name: true, image: true, role: true },
-    orderBy: { name: "asc" }
+  const workspaceId = await getActiveWorkspaceId();
+  if (!workspaceId) return [];
+
+  const members = await prisma.workspaceMember.findMany({
+    where: { workspaceId },
+    include: { user: { select: { id: true, name: true, image: true } } },
+    orderBy: { user: { name: "asc" } }
   });
+
+  return members.map(m => ({ ...m.user, role: m.role }));
 }
 
 export async function deleteTask(taskId: string) {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
-  if (session.user.role === "DEVELOPER") {
-    throw new Error("Only Managers and Admins can delete tasks.");
-  }
+  const task = await prisma.task.findUnique({ where: { id: taskId }, include: { project: true } });
+  if (!task) throw new Error("Task not found");
 
-  const task = await prisma.task.delete({
-    where: { id: taskId },
-    include: { project: true }
+  await requireWorkspacePermission(task.workspaceId, "MANAGER");
+
+  await prisma.task.delete({
+    where: { id: taskId }
   });
 
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: task.workspaceId,
       action: `deleted task "${task.title}"`
     }
   });
 
-  revalidatePath(`/projects/${task.projectId}/board`);
+  if (task.projectId) {
+    revalidatePath(`/projects/${task.projectId}/board`);
+  }
   revalidatePath("/dashboard");
   return task;
 }
@@ -200,6 +248,8 @@ export async function logTime(taskId: string, minutes: number) {
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (!task) throw new Error("Task not found");
 
+  await requireWorkspacePermission(task.workspaceId, "DEVELOPER");
+
   const updatedTask = await prisma.task.update({
     where: { id: taskId },
     data: {
@@ -210,10 +260,13 @@ export async function logTime(taskId: string, minutes: number) {
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
+      workspaceId: task.workspaceId,
       action: `logged ${minutes}m on task "${task.title}"`
     }
   });
 
-  revalidatePath(`/projects/${task.projectId}/board`);
+  if (task.projectId) {
+    revalidatePath(`/projects/${task.projectId}/board`);
+  }
   return updatedTask;
 }

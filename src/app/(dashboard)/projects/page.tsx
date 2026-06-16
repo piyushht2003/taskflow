@@ -8,7 +8,8 @@ import { FolderKanban, CheckSquare, Calendar, Users } from "lucide-react";
 import Link from "next/link";
 import { CreateProjectButton } from "./create-project-button";
 import { DeleteProjectButton } from "./delete-project-button";
-import { getMyWorkspaces } from "@/app/actions/workspace-actions";
+import { getMyWorkspaces, getActiveWorkspaceId } from "@/app/actions/workspace-actions";
+import { hasWorkspacePermission } from "@/lib/permissions";
 
 export default async function ProjectsPage() {
   const session = await auth();
@@ -17,8 +18,11 @@ export default async function ProjectsPage() {
   }
 
   const projects = await getProjects();
+  const activeWorkspaceId = await getActiveWorkspaceId();
+  if (!activeWorkspaceId) redirect("/onboarding");
+
   const workspaces = await getMyWorkspaces();
-  const canCreate = session.user.role === "ADMIN" || session.user.role === "MANAGER";
+  const canCreate = await hasWorkspacePermission(activeWorkspaceId, "MANAGER");
 
   return (
     <div className="flex flex-col gap-6">
@@ -80,14 +84,10 @@ export default async function ProjectsPage() {
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="border-t border-border/50 pt-4 bg-secondary/10 flex items-center justify-between">
+                <CardFooter className="border-t border-border/50 pt-4 bg-secondary/10 flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-6 h-6 border border-border">
-                      <AvatarImage src={project.owner.image || ""} />
-                      <AvatarFallback className="text-[10px]">{project.owner.name?.charAt(0) || "U"}</AvatarFallback>
-                    </Avatar>
                     <span className="text-xs text-muted-foreground">
-                      Managed by <span className="font-medium text-foreground">{project.owner.name}</span>
+                      Workspace Project
                     </span>
                   </div>
                   <Badge variant="outline" className="bg-background">

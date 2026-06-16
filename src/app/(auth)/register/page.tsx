@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,11 +9,16 @@ import { Label } from "@/components/ui/label"
 import { registerUser } from "@/actions/auth"
 import { signIn } from "next-auth/react"
 
-export default function RegisterPage() {
+function RegisterFormContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  const initialEmail = searchParams.get("email") || ""
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+  
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [role, setRole] = useState("DEVELOPER")
+  const [email, setEmail] = useState(initialEmail)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -21,7 +26,6 @@ export default function RegisterPage() {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const email = formData.get("email") as string
     const password = formData.get("password") as string
 
     try {
@@ -43,7 +47,7 @@ export default function RegisterPage() {
         setError("Account created, but failed to log in automatically.")
         setIsLoading(false)
       } else {
-        router.push("/dashboard")
+        router.push(callbackUrl)
         router.refresh()
       }
     } catch (err) {
@@ -85,6 +89,8 @@ export default function RegisterPage() {
             id="email"
             name="email"
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="m@example.com"
             required
             className="bg-neutral-950 border-neutral-800 text-white"
@@ -99,23 +105,6 @@ export default function RegisterPage() {
             required
             className="bg-neutral-950 border-neutral-800 text-white"
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="role" className="text-white flex items-center gap-2">
-            <span className="bg-blue-600/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Demo Mode</span>
-            Account Role
-          </Label>
-          <select
-            id="role"
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="DEVELOPER">Developer (Basic Access)</option>
-            <option value="MANAGER">Manager (Can Create Projects)</option>
-            <option value="ADMIN">Admin (Full System Access)</option>
-          </select>
         </div>
         <Button
           type="submit"
@@ -142,8 +131,7 @@ export default function RegisterPage() {
         variant="outline"
         className="w-full border-neutral-800 bg-neutral-950 hover:bg-neutral-800 text-white"
         onClick={() => {
-          document.cookie = `pending_role=${role}; path=/; max-age=3600;`;
-          signIn("google", { callbackUrl: "/dashboard" });
+          signIn("google", { callbackUrl });
         }}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -170,12 +158,20 @@ export default function RegisterPage() {
       <div className="text-center text-sm text-neutral-400">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
           className="font-medium text-blue-500 hover:text-blue-400"
         >
           Sign in
         </Link>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="text-white text-center py-10">Loading...</div>}>
+      <RegisterFormContent />
+    </Suspense>
   )
 }

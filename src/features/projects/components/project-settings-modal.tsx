@@ -37,7 +37,7 @@ export function ProjectSettingsModal({ project, isOpen, onClose, userRole, works
         title,
         description,
         deadline: deadline ? new Date(deadline) : null,
-        workspaceId: workspaceId === "none" ? null : workspaceId
+        workspaceId: workspaceId === "none" ? undefined : workspaceId
       }).then(() => {
         onClose();
         router.refresh();

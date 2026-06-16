@@ -1,15 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function LoginPage() {
+function LoginFormContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+  
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [googleRole, setGoogleRole] = useState("ADMIN")
@@ -33,7 +36,7 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Invalid email or password")
       } else {
-        router.push("/dashboard")
+        router.push(callbackUrl)
         router.refresh()
       }
     } catch (err) {
@@ -125,7 +128,7 @@ export default function LoginPage() {
           className="w-full border-neutral-800 bg-neutral-950 hover:bg-neutral-800 text-white"
           onClick={() => {
             document.cookie = `pending_role=${googleRole}; path=/; max-age=3600;`;
-            signIn("google", { callbackUrl: "/dashboard" });
+            signIn("google", { callbackUrl });
           }}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -153,12 +156,20 @@ export default function LoginPage() {
       <div className="text-center text-sm text-neutral-400">
         Don&apos;t have an account?{" "}
         <Link
-          href="/register"
+          href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
           className="font-medium text-blue-500 hover:text-blue-400"
         >
           Sign up
         </Link>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="text-white text-center py-10">Loading...</div>}>
+      <LoginFormContent />
+    </Suspense>
   )
 }

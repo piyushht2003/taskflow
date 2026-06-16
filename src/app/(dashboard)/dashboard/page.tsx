@@ -25,17 +25,17 @@ export default async function DashboardPage() {
   }
 
   const activeWorkspaceId = await getActiveWorkspaceId();
+  if (!activeWorkspaceId) redirect("/onboarding");
 
-  // If Manager but no workspace, they will see projects with workspaceId: null
-  // If Developer, workspace filtering is ignored since tasks are global to them
-  const workspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { workspaceId: activeWorkspaceId } : { workspaceId: null };
-  const taskWorkspaceFilter = session.user.role === "DEVELOPER" ? {} : activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : { project: { workspaceId: null } };
+  const workspaceFilter = { workspaceId: activeWorkspaceId };
+  const taskWorkspaceFilter = { project: { workspaceId: activeWorkspaceId } };
 
-  const isOverseer = user.role === "ADMIN" || user.role === "MANAGER";
+  const member = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId: user.id, workspaceId: activeWorkspaceId } }
+  });
+  const isOverseer = member && (member.role === "ADMIN" || member.role === "MANAGER");
 
-  const projectWhere = isOverseer 
-    ? { ...workspaceFilter } 
-    : { ownerId: user.id, ...workspaceFilter };
+  const projectWhere = { ...workspaceFilter };
 
   const taskWhere = isOverseer
     ? { ...taskWorkspaceFilter }
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
     prisma.project.count({ where: projectWhere }),
     prisma.task.count({ where: { status: "COMPLETED", ...taskWhere } }),
     prisma.task.count({ where: { status: { not: "COMPLETED" }, ...taskWhere } }),
-    prisma.user.count(), 
+    prisma.workspaceMember.count({ where: { workspaceId: activeWorkspaceId } }), 
   ]);
 
   // Tasks by status for the pie chart
@@ -100,16 +100,33 @@ export default async function DashboardPage() {
     include: { user: true }
   });
 
-  // Fallback Line Chart data since we don't have historical creation logs for now
-  const lineData = [
-    { name: "Mon", tasks: 4 },
-    { name: "Tue", tasks: 7 },
-    { name: "Wed", tasks: 2 },
-    { name: "Thu", tasks: 5 },
-    { name: "Fri", tasks: pendingTasks + completedTasks },
-    { name: "Sat", tasks: 0 },
-    { name: "Sun", tasks: 0 },
-  ];
+  // Calculate dynamic Line Chart data (past 7 days task creations)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const recentTasks = await prisma.task.findMany({
+    where: {
+      ...taskWhere,
+      createdAt: { gte: sevenDaysAgo }
+    },
+    select: { createdAt: true }
+  });
+
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const lineData = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return { name: daysOfWeek[d.getDay()], tasks: 0 };
+  });
+
+  recentTasks.forEach(task => {
+    const dayName = daysOfWeek[task.createdAt.getDay()];
+    const dayData = lineData.find(d => d.name === dayName);
+    if (dayData) {
+      dayData.tasks += 1;
+    }
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -127,7 +144,7 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">{activeProjects}</div>
               <p className="text-xs text-muted-foreground flex items-center mt-1">
-                {isOverseer ? "Across your workspace" : "Based on your ownership"}
+                Across your workspace
               </p>
             </CardContent>
           </Card>
@@ -169,7 +186,7 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">{teamMembers}</div>
               <p className="text-xs text-muted-foreground flex items-center mt-1">
-                Total registered users
+                In your workspace
               </p>
             </CardContent>
           </Card>
@@ -241,7 +258,7 @@ export default async function DashboardPage() {
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-medium">{deadline.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {deadline.project.title} • {formatDistanceToNow(new Date(deadline.dueDate!), { addSuffix: true })}
+                      {deadline.project?.title || "No Project"} • {formatDistanceToNow(new Date(deadline.dueDate!), { addSuffix: true })}
                     </span>
                   </div>
                   <Badge variant={deadline.priority === "HIGH" ? "destructive" : deadline.priority === "MEDIUM" ? "default" : "secondary"}>

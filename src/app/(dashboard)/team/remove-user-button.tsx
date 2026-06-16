@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { removeUser } from "@/app/actions/team-actions";
+import { removeWorkspaceMember } from "@/app/actions/team-actions";
 import { useRouter } from "next/navigation";
 
 interface RemoveUserButtonProps {
@@ -15,13 +15,13 @@ export function RemoveUserButton({ userId }: RemoveUserButtonProps) {
   const router = useRouter();
 
   async function handleRemove() {
-    if (!confirm("Are you sure you want to remove this user from the entire system? This action cannot be undone.")) {
+    if (!confirm("Are you sure you want to remove this user from the workspace?")) {
       return;
     }
 
     setIsPending(true);
     try {
-      await removeUser(userId);
+      await removeWorkspaceMember(userId);
       router.refresh();
     } catch (error: any) {
       alert(error.message || "Failed to remove user");

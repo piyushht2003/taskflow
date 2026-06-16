@@ -4,30 +4,23 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { hasWorkspacePermission } from "@/lib/permissions";
 
 export async function createWorkspace(name: string) {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
-  if (session.user.role === "DEVELOPER") throw new Error("Developers cannot create workspaces");
 
   const workspace = await prisma.workspace.create({
     data: {
       name,
-      ownerId: session.user.id
+      members: {
+        create: {
+          userId: session.user.id,
+          role: "ADMIN"
+        }
+      }
     }
   });
-
-  const existingWorkspacesCount = await prisma.workspace.count({
-    where: { ownerId: session.user.id }
-  });
-
-  // If this is their first workspace, migrate all their unassigned projects into it
-  if (existingWorkspacesCount === 1) {
-    await prisma.project.updateMany({
-      where: { ownerId: session.user.id, workspaceId: null },
-      data: { workspaceId: workspace.id }
-    });
-  }
 
   revalidatePath("/", "layout");
   return workspace;
@@ -38,7 +31,11 @@ export async function getMyWorkspaces() {
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
   return await prisma.workspace.findMany({
-    where: { ownerId: session.user.id },
+    where: {
+      members: {
+        some: { userId: session.user.id }
+      }
+    },
     orderBy: { createdAt: "asc" }
   });
 }
@@ -51,11 +48,14 @@ export async function getActiveWorkspaceId() {
     return workspaceId;
   }
 
-  // If no active workspace is selected, pick the user's first workspace if it exists
   const session = await auth();
-  if (session?.user?.id && session.user.role !== "DEVELOPER") {
+  if (session?.user?.id) {
     const firstWorkspace = await prisma.workspace.findFirst({
-      where: { ownerId: session.user.id },
+      where: {
+        members: {
+          some: { userId: session.user.id }
+        }
+      },
       orderBy: { createdAt: "asc" }
     });
     if (firstWorkspace) {
@@ -76,8 +76,8 @@ export async function deleteWorkspace(id: string) {
   const session = await auth();
   if (!session?.user || !session.user.id) throw new Error("Unauthorized");
 
-  const workspace = await prisma.workspace.findUnique({ where: { id } });
-  if (!workspace || workspace.ownerId !== session.user.id) {
+  const isAdmin = await hasWorkspacePermission(id, "ADMIN");
+  if (!isAdmin) {
     throw new Error("Not found or unauthorized");
   }
 
