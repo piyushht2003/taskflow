@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { requireWorkspacePermission } from "@/lib/permissions";
 import { randomBytes } from "crypto";
+import { emitWorkspaceEvent } from "@/lib/socket-emitter";
 
 export async function inviteUser(email: string, workspaceId: string, role: string) {
   const session = await auth();
@@ -11,6 +12,14 @@ export async function inviteUser(email: string, workspaceId: string, role: strin
 
   // Only MANAGER and ADMIN can invite.
   await requireWorkspacePermission(workspaceId, "MANAGER");
+
+  // Prevent MANAGER from inviting someone as ADMIN
+  const currentMember = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId: session.user.id, workspaceId } }
+  });
+  if (currentMember?.role === "MANAGER" && role === "ADMIN") {
+    throw new Error("Managers cannot invite users as Admin.");
+  }
 
   const token = randomBytes(32).toString("hex");
 
@@ -24,6 +33,8 @@ export async function inviteUser(email: string, workspaceId: string, role: strin
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
     }
   });
+
+  await emitWorkspaceEvent(workspaceId, "invites-updated");
 
   return invitation;
 }
@@ -54,6 +65,8 @@ export async function acceptInvitation(token: string) {
       data: { status: "ACCEPTED" }
     })
   ]);
+
+  await emitWorkspaceEvent(invitation.workspaceId, "team-updated");
 
   return invitation.workspaceId;
 }

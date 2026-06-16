@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { TaskStatus } from "@/types";
 import { getActiveWorkspaceId } from "./workspace-actions";
 import { hasWorkspacePermission, requireWorkspacePermission } from "@/lib/permissions";
+import { emitWorkspaceEvent } from "@/lib/socket-emitter";
 
 export async function getTasksByProjectId(projectId: string) {
   const session = await auth();
@@ -52,6 +53,8 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
     }
   });
 
+  await emitWorkspaceEvent(task.workspaceId, "tasks-updated");
+
   if (updatedTask.projectId) {
     revalidatePath(`/projects/${updatedTask.projectId}/board`);
   }
@@ -94,6 +97,8 @@ export async function createTask(data: { title: string, projectId: string, statu
       action: `created task "${task.title}"`
     }
   });
+
+  await emitWorkspaceEvent(project.workspaceId, "tasks-updated");
 
   revalidatePath(`/projects/${data.projectId}/board`);
   revalidatePath("/dashboard");
@@ -152,6 +157,9 @@ export async function updateTaskDetails(
   if (updatedTask.projectId) {
     revalidatePath(`/projects/${updatedTask.projectId}/board`);
   }
+  
+  await emitWorkspaceEvent(updatedTask.workspaceId, "tasks-updated");
+  
   revalidatePath("/dashboard");
   return updatedTask;
 }
@@ -190,6 +198,8 @@ export async function addComment(taskId: string, content: string) {
       action: `commented on "${task.title}"`
     }
   });
+
+  await emitWorkspaceEvent(task.workspaceId, "tasks-updated");
 
   if (task.projectId) {
     revalidatePath(`/projects/${task.projectId}/board`);
@@ -234,6 +244,8 @@ export async function deleteTask(taskId: string) {
     }
   });
 
+  await emitWorkspaceEvent(task.workspaceId, "tasks-updated");
+
   if (task.projectId) {
     revalidatePath(`/projects/${task.projectId}/board`);
   }
@@ -264,6 +276,8 @@ export async function logTime(taskId: string, minutes: number) {
       action: `logged ${minutes}m on task "${task.title}"`
     }
   });
+
+  await emitWorkspaceEvent(task.workspaceId, "tasks-updated");
 
   if (task.projectId) {
     revalidatePath(`/projects/${task.projectId}/board`);

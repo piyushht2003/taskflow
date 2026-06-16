@@ -44,11 +44,20 @@ export async function getActiveWorkspaceId() {
   const cookieStore = await cookies();
   const workspaceId = cookieStore.get("workspaceId")?.value;
   
-  if (workspaceId) {
-    return workspaceId;
-  }
-
   const session = await auth();
+  if (!session?.user?.id) return null;
+
+  if (workspaceId) {
+    const valid = await prisma.workspaceMember.findUnique({
+      where: {
+        userId_workspaceId: {
+          userId: session.user.id,
+          workspaceId
+        }
+      }
+    });
+    if (valid) return workspaceId;
+  }
   if (session?.user?.id) {
     const firstWorkspace = await prisma.workspace.findFirst({
       where: {

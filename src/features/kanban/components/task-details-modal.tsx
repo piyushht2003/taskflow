@@ -29,12 +29,17 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
   const [isPending, startTransition] = useTransition();
   const [users, setUsers] = useState<any[]>([]);
   
-  // Local state for optimistic updates
-  const [description, setDescription] = useState(task?.description || "");
-  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [draft, setDraft] = useState({
+    description: task?.description || "",
+    assigneeId: task?.assigneeId || null,
+    dueDate: task?.dueDate || null,
+    attachments: task?.attachments || "[]",
+  });
+
   const [commentText, setCommentText] = useState("");
   const [timeToLog, setTimeToLog] = useState("");
   const [localAttachments, setLocalAttachments] = useState<string[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const formatTime = (minutes: number) => {
     if (!minutes) return "0m";
@@ -45,12 +50,18 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
 
   useEffect(() => {
     if (task) {
-      setDescription(task.description || "");
+      setDraft({
+        description: task.description || "",
+        assigneeId: task.assigneeId || null,
+        dueDate: task.dueDate || null,
+        attachments: task.attachments || "[]",
+      });
       try {
         setLocalAttachments(JSON.parse(task.attachments || "[]"));
       } catch(e) {
         setLocalAttachments([]);
       }
+      setHasChanges(false);
     }
   }, [task]);
 
@@ -62,29 +73,35 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
 
   if (!task) return null;
 
-  const handleSaveDescription = () => {
-    if (description === task.description) {
-      setIsEditingDesc(false);
-      return;
-    }
+  const handleSaveChanges = () => {
     startTransition(() => {
-      updateTaskDetails(task.id, { description }).then(() => onTaskUpdate?.());
-      setIsEditingDesc(false);
+      updateTaskDetails(task.id, { 
+        description: draft.description,
+        assigneeId: draft.assigneeId,
+        dueDate: draft.dueDate,
+        attachments: draft.attachments,
+      }).then(() => {
+        setHasChanges(false);
+        onTaskUpdate?.();
+      });
     });
   };
 
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
-    startTransition(() => {
-      updateTaskDetails(task.id, { assigneeId: val === "UNASSIGNED" ? null : val }).then(() => onTaskUpdate?.());
-    });
+    const val = e.target.value === "UNASSIGNED" ? null : e.target.value;
+    setDraft(prev => ({ ...prev, assigneeId: val }));
+    setHasChanges(true);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    startTransition(() => {
-      updateTaskDetails(task.id, { dueDate: val ? new Date(val) : null }).then(() => onTaskUpdate?.());
-    });
+    const val = e.target.value ? new Date(e.target.value) : null;
+    setDraft(prev => ({ ...prev, dueDate: val }));
+    setHasChanges(true);
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDraft(prev => ({ ...prev, description: e.target.value }));
+    setHasChanges(true);
   };
 
   const handleAddComment = () => {
@@ -130,12 +147,11 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
     const newAttachments = [...localAttachments, url];
     setLocalAttachments(newAttachments); // Optimistic UI update
     const updated = JSON.stringify(newAttachments);
-    startTransition(() => {
-      updateTaskDetails(task.id, { attachments: updated }).then(() => onTaskUpdate?.());
-    });
+    setDraft(prev => ({ ...prev, attachments: updated }));
+    setHasChanges(true);
   };
 
-  const isAssignedToMe = task.assigneeId === currentUserId;
+  const isAssignedToMe = draft.assigneeId === currentUserId;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -157,27 +173,14 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
               {/* Description */}
               <div>
                 <h3 className="text-sm font-semibold mb-2">Description</h3>
-                {isEditingDesc ? (
-                  <div className="space-y-2">
-                    <textarea 
-                      autoFocus
-                      className="w-full min-h-[120px] bg-secondary/30 border border-primary/50 rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveDescription} disabled={isPending}>Save</Button>
-                      <Button size="sm" variant="ghost" onClick={() => { setDescription(task.description || ""); setIsEditingDesc(false); }}>Cancel</Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div 
-                    className="text-sm text-muted-foreground bg-secondary/10 p-4 rounded-lg border border-border/50 min-h-[100px] cursor-pointer hover:bg-secondary/20 transition-colors"
-                    onClick={() => setIsEditingDesc(true)}
-                  >
-                    {description || "Add a more detailed description..."}
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <textarea 
+                    className="w-full min-h-[120px] bg-secondary/30 border border-primary/50 rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    value={draft.description}
+                    onChange={handleDescriptionChange}
+                    placeholder="Add a more detailed description..."
+                  />
+                </div>
               </div>
 
               {/* Attachments */}
@@ -293,7 +296,7 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assignee</h4>
               <select 
                 className="w-full bg-background border border-border/50 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                value={task.assigneeId || "UNASSIGNED"}
+                value={draft.assigneeId || "UNASSIGNED"}
                 onChange={handleAssigneeChange}
                 disabled={isPending || userRole === "DEVELOPER"}
               >
@@ -309,11 +312,23 @@ export function TaskDetailsModal({ task, isOpen, onClose, userRole, currentUserI
               <input 
                 type="date" 
                 className="w-full bg-background border border-border/50 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                value={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ""}
+                value={draft.dueDate ? new Date(draft.dueDate).toISOString().split('T')[0] : ""}
                 onChange={handleDateChange}
                 disabled={isPending}
               />
             </div>
+
+            {hasChanges && (
+              <div className="pt-2">
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md"
+                  onClick={handleSaveChanges}
+                  disabled={isPending}
+                >
+                  Save Changes
+                </Button>
+              </div>
+            )}
 
             <div>
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Time Tracking</h4>

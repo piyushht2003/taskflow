@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { getActiveWorkspaceId } from "./workspace-actions";
 import { hasWorkspacePermission, requireWorkspacePermission } from "@/lib/permissions";
+import { emitWorkspaceEvent } from "@/lib/socket-emitter";
 
 export async function getProjects() {
   const session = await auth();
@@ -67,6 +68,8 @@ export async function createProject(title: string, description?: string, targetW
     }
   });
 
+  await emitWorkspaceEvent(workspaceId, "projects-updated");
+
   revalidatePath("/dashboard");
   revalidatePath("/projects");
   return project;
@@ -92,6 +95,8 @@ export async function deleteProject(id: string) {
       action: `deleted project "${project.title}"`
     }
   });
+
+  await emitWorkspaceEvent(project.workspaceId, "projects-updated");
 
   revalidatePath("/dashboard");
   revalidatePath("/projects");
@@ -124,6 +129,8 @@ export async function updateProject(id: string, data: { title?: string; descript
       action: `updated project "${updatedProject.title}" settings`
     }
   });
+
+  await emitWorkspaceEvent(updatedProject.workspaceId, "projects-updated");
 
   revalidatePath("/", "layout");
   revalidatePath("/dashboard");

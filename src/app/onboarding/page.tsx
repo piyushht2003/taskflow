@@ -10,6 +10,15 @@ export default async function OnboardingPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!dbUser) {
+    redirect("/api/auth/force-logout?redirectTo=/register");
+  }
+
+  if (dbUser.status === "SUSPENDED") {
+    redirect("/api/auth/force-logout?redirectTo=/login");
+  }
+
   const memberships = await prisma.workspaceMember.count({
     where: { userId: session.user.id }
   });

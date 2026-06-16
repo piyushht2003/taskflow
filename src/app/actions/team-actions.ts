@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { getActiveWorkspaceId } from "./workspace-actions";
 import { hasWorkspacePermission, requireWorkspacePermission } from "@/lib/permissions";
+import { emitWorkspaceEvent } from "@/lib/socket-emitter";
 
 export async function removeWorkspaceMember(userId: string) {
   const session = await auth();
@@ -17,6 +18,22 @@ export async function removeWorkspaceMember(userId: string) {
 
   if (session.user.id === userId) {
     throw new Error("You cannot remove yourself.");
+  }
+
+  const currentMember = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId: session.user.id, workspaceId } }
+  });
+
+  const targetMember = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId, workspaceId } }
+  });
+
+  if (!targetMember) {
+    throw new Error("Target user is not a member of this workspace.");
+  }
+
+  if (currentMember?.role === "MANAGER" && targetMember.role === "ADMIN") {
+    throw new Error("Managers cannot remove an Admin.");
   }
 
   await prisma.workspaceMember.delete({
@@ -35,6 +52,8 @@ export async function removeWorkspaceMember(userId: string) {
       action: `removed a member from the workspace`
     }
   });
+
+  await emitWorkspaceEvent(workspaceId, "team-updated");
 
   revalidatePath("/team");
   revalidatePath("/dashboard");
@@ -62,6 +81,18 @@ export async function updateMemberRole(userId: string, newRole: string) {
     throw new Error("Managers cannot assign the Admin role.");
   }
 
+  const targetMember = await prisma.workspaceMember.findUnique({
+    where: { userId_workspaceId: { userId, workspaceId } }
+  });
+
+  if (!targetMember) {
+    throw new Error("Target user is not a member of this workspace.");
+  }
+
+  if (currentMember?.role === "MANAGER" && targetMember.role === "ADMIN") {
+    throw new Error("Managers cannot change the role of an Admin.");
+  }
+
   await prisma.workspaceMember.update({
     where: {
       userId_workspaceId: { userId, workspaceId }
@@ -76,6 +107,8 @@ export async function updateMemberRole(userId: string, newRole: string) {
       action: `updated a member's role to ${newRole}`
     }
   });
+
+  await emitWorkspaceEvent(workspaceId, "team-updated");
 
   revalidatePath("/team");
 }

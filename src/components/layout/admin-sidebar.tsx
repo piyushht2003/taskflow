@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Folders, LogOut, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Users, Folders, LogOut, ArrowLeft, Settings, CheckSquare, Mail, Activity, BarChart3, ActivitySquare } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 export function AdminSidebar() {
@@ -12,6 +12,11 @@ export function AdminSidebar() {
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Workspaces", href: "/admin/workspaces", icon: Folders },
+    { name: "Tasks", href: "/admin/tasks", icon: CheckSquare },
+    { name: "Invitations", href: "/admin/invitations", icon: Mail },
+    { name: "Activity Logs", href: "/admin/activity", icon: Activity },
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    { name: "System Health", href: "/admin/health", icon: ActivitySquare },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 

@@ -14,10 +14,12 @@ import {
 export function UpdateRoleSelect({ 
   userId, 
   currentRole, 
+  currentUserRole,
   disabled 
 }: { 
   userId: string; 
   currentRole: string;
+  currentUserRole: string;
   disabled?: boolean;
 }) {
   const router = useRouter();
@@ -56,7 +58,7 @@ export function UpdateRoleSelect({
           <SelectValue placeholder="Select Role" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ADMIN">Admin</SelectItem>
+          {currentUserRole === "ADMIN" && <SelectItem value="ADMIN">Admin</SelectItem>}
           <SelectItem value="MANAGER">Manager</SelectItem>
           <SelectItem value="DEVELOPER">Developer</SelectItem>
           <SelectItem value="USER">User</SelectItem>

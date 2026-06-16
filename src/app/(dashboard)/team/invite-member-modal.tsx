@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus } from "lucide-react";
 import { inviteUser } from "@/app/actions/invite-actions";
 
-export function InviteMemberModal({ workspaceId }: { workspaceId: string }) {
+export function InviteMemberModal({ workspaceId, currentUserRole }: { workspaceId: string, currentUserRole: string }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("DEVELOPER");
@@ -60,7 +60,7 @@ export function InviteMemberModal({ workspaceId }: { workspaceId: string }) {
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ADMIN">Admin</SelectItem>
+                {currentUserRole === "ADMIN" && <SelectItem value="ADMIN">Admin</SelectItem>}
                 <SelectItem value="MANAGER">Manager</SelectItem>
                 <SelectItem value="DEVELOPER">Developer</SelectItem>
                 <SelectItem value="DESIGNER">Designer</SelectItem>

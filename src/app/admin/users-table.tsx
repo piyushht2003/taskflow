@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Trash2, UserX, UserCheck, Eye, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -19,14 +19,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateUserRole, deleteUserAdmin } from "@/actions/admin";
+import { Badge } from "@/components/ui/badge";
+import { updateUserRole, deleteUserAdmin, toggleUserStatus } from "@/actions/admin";
+import Link from "next/link";
 
 interface User {
   id: string;
   name: string | null;
   email: string | null;
   platformRole: string;
+  status: string;
   createdAt: Date;
+  activityLogs: { timestamp: Date }[];
+  _count: {
+    workspaceMembers: number;
+    tasks: number;
+  };
 }
 
 export function UsersTable({ users }: { users: User[] }) {
@@ -38,6 +46,20 @@ export function UsersTable({ users }: { users: User[] }) {
       await updateUserRole(userId, newRole);
     } catch (e: any) {
       alert(e.message || "Failed to update role");
+    } finally {
+      setLoadingId(null);
+    }
+  }
+
+  async function handleStatusToggle(userId: string, currentStatus: string) {
+    const newStatus = currentStatus === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
+    if (newStatus === "SUSPENDED" && !confirm("Are you sure you want to suspend this user? They will not be able to log in.")) return;
+    
+    setLoadingId(userId);
+    try {
+      await toggleUserStatus(userId, newStatus);
+    } catch (e: any) {
+      alert(e.message || "Failed to toggle status");
     } finally {
       setLoadingId(null);
     }
@@ -63,6 +85,9 @@ export function UsersTable({ users }: { users: User[] }) {
           <TableRow>
             <TableHead>User</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Stats</TableHead>
+            <TableHead>Last Active</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -89,10 +114,38 @@ export function UsersTable({ users }: { users: User[] }) {
                   </SelectContent>
                 </Select>
               </TableCell>
+              <TableCell>
+                <Badge variant={user.status === "ACTIVE" ? "default" : "destructive"}>
+                  {user.status}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="text-xs text-muted-foreground">
+                  <div>Workspaces: {user._count.workspaceMembers}</div>
+                  <div>Tasks: {user._count.tasks}</div>
+                </div>
+              </TableCell>
+              <TableCell className="text-muted-foreground text-sm">
+                {user.activityLogs[0] ? format(new Date(user.activityLogs[0].timestamp), "MMM d, yyyy") : "Never"}
+              </TableCell>
               <TableCell className="text-muted-foreground text-sm">
                 {format(new Date(user.createdAt), "MMM d, yyyy")}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right space-x-2">
+                <Link href={`/admin/users/${user.id}`}>
+                  <Button variant="outline" size="icon-sm" title="View User Details">
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={loadingId === user.id}
+                  onClick={() => handleStatusToggle(user.id, user.status)}
+                  title={user.status === "ACTIVE" ? "Suspend User" : "Reactivate User"}
+                >
+                  {user.status === "ACTIVE" ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                </Button>
                 <Button
                   variant="destructive"
                   size="icon-sm"
@@ -107,7 +160,7 @@ export function UsersTable({ users }: { users: User[] }) {
           ))}
           {users.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
+              <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
                 No users found.
               </TableCell>
             </TableRow>

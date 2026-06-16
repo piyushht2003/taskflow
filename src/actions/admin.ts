@@ -16,7 +16,16 @@ export async function getUsers() {
       name: true,
       email: true,
       platformRole: true,
+      status: true,
       createdAt: true,
+      activityLogs: {
+        orderBy: { timestamp: "desc" },
+        take: 1,
+        select: { timestamp: true }
+      },
+      _count: {
+        select: { workspaceMembers: true, tasks: true }
+      }
     },
     orderBy: { createdAt: "desc" },
   });
@@ -51,10 +60,16 @@ export async function getWorkspacesAdmin() {
     select: {
       id: true,
       name: true,
+      status: true,
       createdAt: true,
       _count: {
-        select: { members: true, projects: true },
+        select: { members: true, projects: true, tasks: true },
       },
+      members: {
+        where: { role: "ADMIN" },
+        take: 1,
+        select: { user: { select: { name: true, email: true } } }
+      }
     },
     orderBy: { createdAt: "desc" },
   });
@@ -78,6 +93,25 @@ export async function deleteUserAdmin(userId: string) {
   return { success: true };
 }
 
+export async function toggleUserStatus(userId: string, newStatus: string) {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  if (session.user.id === userId) {
+    throw new Error("Cannot change your own status");
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { status: newStatus },
+  });
+
+  revalidatePath("/admin");
+  return { success: true };
+}
+
 export async function deleteWorkspaceAdmin(workspaceId: string) {
   const session = await auth();
   if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
@@ -86,6 +120,21 @@ export async function deleteWorkspaceAdmin(workspaceId: string) {
 
   await prisma.workspace.delete({
     where: { id: workspaceId },
+  });
+
+  revalidatePath("/admin");
+  return { success: true };
+}
+
+export async function toggleWorkspaceStatus(workspaceId: string, newStatus: string) {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { status: newStatus },
   });
 
   revalidatePath("/admin");
@@ -139,4 +188,118 @@ export async function getAdminAnalytics() {
   });
 
   return Array.from(dataMap.values());
+}
+
+export async function getTasksAdmin() {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  return await prisma.task.findMany({
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      priority: true,
+      dueDate: true,
+      createdAt: true,
+      workspace: { select: { id: true, name: true } },
+      project: { select: { id: true, title: true } },
+      assignee: { select: { id: true, name: true, email: true } }
+    },
+    orderBy: { createdAt: "desc" },
+    take: 100
+  });
+}
+
+export async function getInvitationsAdmin() {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  return await prisma.invitation.findMany({
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      status: true,
+      expiresAt: true,
+      createdAt: true,
+      workspace: { select: { id: true, name: true } },
+      inviter: { select: { id: true, name: true, email: true } }
+    },
+    orderBy: { createdAt: "desc" },
+    take: 100
+  });
+}
+
+export async function revokeInvitationAdmin(invitationId: string) {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.invitation.update({
+    where: { id: invitationId },
+    data: { status: "REVOKED" }
+  });
+
+  revalidatePath("/admin");
+  return { success: true };
+}
+
+export async function getActivityLogsAdmin() {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  return await prisma.activityLog.findMany({
+    select: {
+      id: true,
+      action: true,
+      timestamp: true,
+      metadata: true,
+      user: { select: { id: true, name: true, email: true } },
+      workspace: { select: { id: true, name: true } }
+    },
+    orderBy: { timestamp: "desc" },
+    take: 200
+  });
+}
+
+export async function getSystemSettings() {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  let settings = await prisma.systemSettings.findUnique({
+    where: { id: "default" }
+  });
+
+  if (!settings) {
+    settings = await prisma.systemSettings.create({
+      data: { id: "default" }
+    });
+  }
+
+  return settings;
+}
+
+export async function updateSystemSettings(data: { platformName?: string; description?: string; maintenanceMode?: boolean }) {
+  const session = await auth();
+  if (!session?.user || session.user.platformRole !== "SUPER_ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.systemSettings.update({
+    where: { id: "default" },
+    data
+  });
+
+  revalidatePath("/admin/settings");
+  return { success: true };
 }

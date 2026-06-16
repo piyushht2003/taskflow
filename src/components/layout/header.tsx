@@ -27,11 +27,9 @@ export async function Header() {
 
   return (
     <header className="h-16 border-b border-border bg-background flex items-center justify-between px-4 md:px-6 shrink-0">
-      <div className="flex items-center text-xl font-semibold">
+      <div className="flex items-center text-xl font-semibold overflow-hidden">
         <Sheet>
-          <SheetTrigger 
-            render={<Button variant="ghost" size="icon" className="md:hidden mr-2" />}
-          >
+          <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden mr-2 shrink-0" />}>
             <Menu className="w-5 h-5" />
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-64 flex flex-col border-r-0">
@@ -39,13 +37,15 @@ export async function Header() {
             <Sidebar />
           </SheetContent>
         </Sheet>
-        Dashboard
+        <span className="truncate">Dashboard</span>
       </div>
 
-      <div className="flex items-center gap-6">
-        <GlobalSearch />
+      <div className="flex items-center gap-2 md:gap-6 shrink-0">
+        <div className="hidden sm:block">
+          <GlobalSearch />
+        </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
           <Link href="/notifications">
             <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
               <Bell className="w-5 h-5" />

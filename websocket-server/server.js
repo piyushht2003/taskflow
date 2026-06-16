@@ -6,7 +6,20 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 app.use(cors());
+app.use(express.json());
+
 const server = http.createServer(app);
+
+app.post("/emit", (req, res) => {
+    const { workspaceId, event, payload } = req.body;
+    if (workspaceId && event) {
+        const room = `workspace_${workspaceId}`;
+        io.to(room).emit(event, payload);
+        return res.json({ success: true });
+    }
+    res.status(400).json({ error: "Missing parameters" });
+});
+
 const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_URL || "http://localhost:3000",

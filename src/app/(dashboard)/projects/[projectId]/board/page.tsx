@@ -16,6 +16,9 @@ interface PageProps {
 import { CreateTaskButton } from "@/features/kanban/components/create-task-button";
 import { ProjectSettingsButton } from "@/features/projects/components/project-settings-button";
 
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+
 export default async function ProjectBoardPage({ params }: PageProps) {
   const { projectId } = await params;
   
@@ -50,9 +53,18 @@ export default async function ProjectBoardPage({ params }: PageProps) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      <div className="mb-4">
+        <Link 
+          href="/projects" 
+          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Projects
+        </Link>
+      </div>
       <div className="flex items-center justify-between pb-6 shrink-0 border-b border-border mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0">
             <span className="text-orange-500 font-bold text-xl">{project.title.charAt(0)}</span>
           </div>
           <div>

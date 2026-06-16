@@ -43,11 +43,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null
         }
 
+        if (user.status === "SUSPENDED") {
+          throw new Error("Your account has been suspended by the administrator.");
+        }
+
         return user
       },
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (user.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+        if (dbUser && dbUser.status === "SUSPENDED") {
+          throw new Error("Your account has been suspended by the administrator.");
+        }
+      }
+      return true;
+    },
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub

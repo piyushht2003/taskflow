@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   platformRole  String         @default("USER") // SUPER_ADMIN or USER
+  status        String         @default("ACTIVE") // ACTIVE, SUSPENDED
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -25,6 +26,7 @@ model User {
   comments      Comment[]
   notifications Notification[]
   activityLogs  ActivityLog[]
+  auditTrails   AuditTrail[]   @relation("AdminAudit")
   accounts      Account[]
   sessions      Session[]
 }
@@ -68,6 +70,7 @@ model Workspace {
   id        String   @id @default(cuid())
   name      String
   slug      String   @unique @default(cuid())
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -188,9 +191,42 @@ model ActivityLog {
   id          String   @id @default(cuid())
   action      String
   userId      String
-  workspaceId String
+  workspaceId String?
+  metadata    String?  // JSON string
   timestamp   DateTime @default(now())
 
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemSettings {
+  id               String   @id @default("default")
+  platformName     String   @default("TaskFlow")
+  platformLogo     String?
+  description      String?
+  maintenanceMode  Boolean  @default(false)
+  sessionTimeout   Int      @default(86400) // seconds
+  updatedAt        DateTime @updatedAt
+}
+
+model AuditTrail {
+  id          String   @id @default(cuid())
+  action      String
+  adminId     String
+  targetId    String?
+  targetType  String?  // e.g. "USER", "WORKSPACE"
+  details     String?  // JSON string
+  timestamp   DateTime @default(now())
+
+  admin       User     @relation("AdminAudit", fields: [adminId], references: [id], onDelete: Cascade)
+}
+
+model AnalyticsTracking {
+  id          String   @id @default(cuid())
+  date        DateTime @unique
+  activeUsers Int      @default(0)
+  newUsers    Int      @default(0)
+  tasksDone   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

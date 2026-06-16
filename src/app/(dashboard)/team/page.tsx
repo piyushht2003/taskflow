@@ -39,51 +39,55 @@ export default async function TeamPage() {
           <p className="text-muted-foreground mt-1">View all members in this workspace.</p>
         </div>
         {canManage && (
-          <InviteMemberModal workspaceId={workspaceId} />
+          <InviteMemberModal workspaceId={workspaceId} currentUserRole={currentUserMembership?.role || "USER"} />
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {members.map((m) => (
-          <Card key={m.id} className="bg-card border-border/50 hover:border-primary/30 transition-colors relative group">
-            {canManage && session.user.id !== m.userId && (
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <RemoveUserButton userId={m.userId} />
-              </div>
-            )}
-            <CardContent className="p-6 flex flex-col items-center text-center">
-              <Avatar className="w-20 h-20 border-4 border-background shadow-sm mb-4">
-                <AvatarImage src={m.user.image || ""} />
-                <AvatarFallback className="text-2xl">{m.user.name?.charAt(0) || "U"}</AvatarFallback>
-              </Avatar>
-              
-              <h3 className="font-bold text-lg mb-1">{m.user.name || "Unknown User"}</h3>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-                <Mail className="w-3.5 h-3.5" />
-                <span className="truncate max-w-[200px]">{m.user.email}</span>
-              </div>
-
-              {m.user.platformRole === "SUPER_ADMIN" && (
-                <Badge variant="secondary" className="mb-2 bg-yellow-500/10 text-yellow-500">
-                  <ShieldAlert className="w-3 h-3 mr-1" /> Platform Admin
-                </Badge>
-              )}
-
-              <div className="flex flex-col gap-2 w-full mt-2">
-                <div className="flex justify-between items-center bg-secondary/20 p-2 rounded-md border border-border/50">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Role</span>
-                  {canManage && m.userId !== session.user.id ? (
-                    <UpdateRoleSelect userId={m.userId} currentRole={m.role} />
-                  ) : (
-                    <Badge variant="outline" className={getRoleBadgeColor(m.role)}>
-                      {m.role}
-                    </Badge>
-                  )}
+        {members.map((m) => {
+          const canModifyMember = canManage && session.user.id !== m.userId && !(currentUserMembership?.role === "MANAGER" && m.role === "ADMIN");
+          
+          return (
+            <Card key={m.id} className="bg-card border-border/50 hover:border-primary/30 transition-colors relative group">
+              {canModifyMember && (
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <RemoveUserButton userId={m.userId} />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              )}
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <Avatar className="w-20 h-20 border-4 border-background shadow-sm mb-4">
+                  <AvatarImage src={m.user.image || ""} />
+                  <AvatarFallback className="text-2xl">{m.user.name?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                
+                <h3 className="font-bold text-lg mb-1">{m.user.name || "Unknown User"}</h3>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
+                  <Mail className="w-3.5 h-3.5" />
+                  <span className="truncate max-w-[200px]">{m.user.email}</span>
+                </div>
+
+                {m.user.platformRole === "SUPER_ADMIN" && (
+                  <Badge variant="secondary" className="mb-2 bg-yellow-500/10 text-yellow-500">
+                    <ShieldAlert className="w-3 h-3 mr-1" /> Platform Admin
+                  </Badge>
+                )}
+
+                <div className="flex flex-col gap-2 w-full mt-2">
+                  <div className="flex justify-between items-center bg-secondary/20 p-2 rounded-md border border-border/50">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase">Role</span>
+                    {canModifyMember ? (
+                      <UpdateRoleSelect userId={m.userId} currentRole={m.role} currentUserRole={currentUserMembership?.role || "USER"} />
+                    ) : (
+                      <Badge variant="outline" className={getRoleBadgeColor(m.role)}>
+                        {m.role}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
