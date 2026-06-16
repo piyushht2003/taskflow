@@ -8,6 +8,10 @@ export async function GlobalLayout({ children }: { children: React.ReactNode }) 
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  if (session.user.platformRole === "SUPER_ADMIN") {
+    redirect("/admin");
+  }
+
   if (session.user.platformRole !== "SUPER_ADMIN") {
     const memberships = await prisma.workspaceMember.count({
       where: { userId: session.user.id }

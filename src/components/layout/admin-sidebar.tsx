@@ -12,6 +12,7 @@ export function AdminSidebar() {
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Workspaces", href: "/admin/workspaces", icon: Folders },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   return (
@@ -45,13 +46,6 @@ export function AdminSidebar() {
         })}
       </div>
       <div className="p-4 border-t border-border flex flex-col gap-2">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="font-medium text-sm">Back to Workspace</span>
-        </Link>
         <button
           onClick={() => signOut()}
           className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
