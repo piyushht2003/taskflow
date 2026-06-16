@@ -27,30 +27,25 @@ export async function GlobalLayout({ children }: { children: React.ReactNode }) 
 
   const activeWorkspaceId = await getActiveWorkspaceId();
 
-  if (session.user.platformRole !== "SUPER_ADMIN") {
-    const memberships = await prisma.workspaceMember.count({
-      where: { userId: session.user.id }
+  const memberships = await prisma.workspaceMember.count({
+    where: { userId: session.user.id }
+  });
+
+  if (memberships === 0) {
+    redirect("/onboarding");
+  }
+
+  if (activeWorkspaceId) {
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: activeWorkspaceId }
     });
-
-    if (memberships === 0) {
-      redirect("/onboarding");
-    }
-
-    if (activeWorkspaceId) {
-      const workspace = await prisma.workspace.findUnique({
-        where: { id: activeWorkspaceId }
-      });
-      if (workspace?.status === "SUSPENDED") {
-        // Just show a message or clear the cookie to force selecting another
-        // To keep it simple, we can render an error state or redirect to onboarding
-        // For now, let's just let them see an error or we can redirect to a suspended page
-        return (
-          <div className="flex h-screen w-full items-center justify-center bg-background flex-col gap-4">
-            <h1 className="text-2xl font-bold">Workspace Suspended</h1>
-            <p className="text-muted-foreground">This workspace has been suspended by the administrator.</p>
-          </div>
-        );
-      }
+    if (workspace?.status === "SUSPENDED") {
+      return (
+        <div className="flex h-screen w-full items-center justify-center bg-background flex-col gap-4">
+          <h1 className="text-2xl font-bold">Workspace Suspended</h1>
+          <p className="text-muted-foreground">This workspace has been suspended by the administrator.</p>
+        </div>
+      );
     }
   }
 
