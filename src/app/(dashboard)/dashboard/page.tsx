@@ -25,15 +25,17 @@ export default async function DashboardPage() {
   }
 
   const activeWorkspaceId = await getActiveWorkspaceId();
-  if (!activeWorkspaceId) redirect("/onboarding");
+  if (!activeWorkspaceId && session.user.platformRole !== "SUPER_ADMIN") {
+    redirect("/onboarding");
+  }
 
-  const workspaceFilter = { workspaceId: activeWorkspaceId };
-  const taskWorkspaceFilter = { project: { workspaceId: activeWorkspaceId } };
+  const workspaceFilter = activeWorkspaceId ? { workspaceId: activeWorkspaceId } : {};
+  const taskWorkspaceFilter = activeWorkspaceId ? { project: { workspaceId: activeWorkspaceId } } : {};
 
-  const member = await prisma.workspaceMember.findUnique({
+  const member = activeWorkspaceId ? await prisma.workspaceMember.findUnique({
     where: { userId_workspaceId: { userId: user.id, workspaceId: activeWorkspaceId } }
-  });
-  const isOverseer = member && (member.role === "ADMIN" || member.role === "MANAGER");
+  }) : null;
+  const isOverseer = session.user.platformRole === "SUPER_ADMIN" || (member && (member.role === "ADMIN" || member.role === "MANAGER"));
 
   const projectWhere = { ...workspaceFilter };
 
@@ -46,7 +48,7 @@ export default async function DashboardPage() {
     prisma.project.count({ where: projectWhere }),
     prisma.task.count({ where: { status: "COMPLETED", ...taskWhere } }),
     prisma.task.count({ where: { status: { not: "COMPLETED" }, ...taskWhere } }),
-    prisma.workspaceMember.count({ where: { workspaceId: activeWorkspaceId } }), 
+    prisma.workspaceMember.count({ where: activeWorkspaceId ? { workspaceId: activeWorkspaceId } : {} }), 
   ]);
 
   // Tasks by status for the pie chart

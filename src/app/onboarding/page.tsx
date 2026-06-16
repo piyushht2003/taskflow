@@ -14,7 +14,7 @@ export default async function OnboardingPage() {
     where: { userId: session.user.id }
   });
 
-  if (memberships > 0) {
+  if (memberships > 0 || session.user.platformRole === "SUPER_ADMIN") {
     redirect("/dashboard");
   }
 
