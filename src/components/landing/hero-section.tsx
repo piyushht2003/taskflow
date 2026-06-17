@@ -89,7 +89,7 @@ export function HeroSection() {
             </div>
           </div>
           {/* Main App Area */}
-          <div className="grid grid-cols-12 gap-4 p-4 h-[450px]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 min-h-[450px] md:h-[450px] overflow-y-auto overflow-x-hidden">
             {/* Sidebar */}
             <div className="col-span-3 hidden md:flex flex-col gap-2 border-r border-neutral-200 dark:border-white/5 pr-4">
               <div className="flex items-center gap-2 mb-6">
@@ -135,7 +135,7 @@ export function HeroSection() {
               </div>
               
               {/* Stats Row */}
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4">
                   <div className="h-3 bg-neutral-200 dark:bg-white/20 rounded w-24 mb-3"></div>
                   <div className="h-8 bg-neutral-300 dark:bg-white/30 rounded w-8 mb-1"></div>
@@ -159,7 +159,7 @@ export function HeroSection() {
               </div>
 
               {/* Main Content Areas */}
-              <div className="grid grid-cols-3 gap-4 h-full">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:h-full pb-4 md:pb-0">
                 {/* Large Chart Area */}
                 <div className="col-span-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-lg p-4 flex flex-col">
                   <div className="h-4 bg-neutral-200 dark:bg-white/20 rounded w-32 mb-6"></div>

@@ -53,7 +53,7 @@ export function ProductShowcase() {
           </div>
 
           {/* Image Container */}
-          <div className="w-full max-w-5xl aspect-video relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/50 shadow-xl overflow-hidden ring-1 ring-black/5 dark:ring-white/5 group">
+          <div className="w-full max-w-5xl min-h-[550px] md:min-h-0 md:aspect-video relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/50 shadow-xl overflow-hidden ring-1 ring-black/5 dark:ring-white/5 group">
             {/* Browser Dots */}
             <div className="absolute top-0 inset-x-0 h-12 bg-neutral-100/80 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-white/5 flex items-center px-4 z-20">
               <div className="flex gap-1.5">
@@ -70,7 +70,7 @@ export function ProductShowcase() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
                 transition={{ duration: 0.4 }}
-                className="absolute inset-0 top-12 overflow-hidden bg-neutral-50 dark:bg-neutral-950 p-6 flex flex-col"
+                className="absolute inset-0 top-12 overflow-y-auto overflow-x-hidden bg-neutral-50 dark:bg-neutral-950 p-4 md:p-6 flex flex-col"
               >
                 {activeTab === 0 && <KanbanMockup />}
                 {activeTab === 1 && <AnalyticsMockup />}
@@ -87,7 +87,7 @@ export function ProductShowcase() {
 
 function KanbanMockup() {
   return (
-    <div className="flex-1 flex gap-4 w-full h-full p-2">
+    <div className="flex-1 flex flex-col md:flex-row gap-4 w-full h-full p-2">
       {[
         { title: "To Do", count: 3, color: "bg-neutral-500" },
         { title: "In Progress", count: 2, color: "bg-blue-500" },
@@ -119,7 +119,7 @@ function KanbanMockup() {
 
 function AnalyticsMockup() {
   return (
-    <div className="flex-1 grid grid-cols-2 gap-4 h-full">
+    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 h-full pb-6 md:pb-0">
       <div className="col-span-2 md:col-span-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-xl p-6 flex flex-col">
         <div className="h-5 bg-neutral-200 dark:bg-white/20 rounded w-1/3 mb-8"></div>
         <div className="flex-1 flex items-center justify-center relative">
