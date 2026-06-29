@@ -12,55 +12,59 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-[100px] rounded-full mix-blend-multiply dark:mix-blend-screen" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 text-center z-10 pb-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-neutral-600 dark:text-neutral-300 text-sm font-medium mb-8 backdrop-blur-md"
-        >
-          <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
-          TaskFlow 1.0 is now live
-        </motion.div>
+      <div className="relative mx-auto max-w-7xl px-6 z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+        {/* Text Column */}
+        <div className="flex-1 text-center lg:text-left flex flex-col items-center lg:items-start">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-neutral-600 dark:text-neutral-300 text-sm font-medium mb-6 backdrop-blur-md"
+          >
+            <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            TaskFlow 1.0 is now live
+          </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-5xl lg:text-7xl font-extrabold tracking-tight mb-8 text-neutral-900 dark:text-white"
-        >
-          Manage Projects. <br className="hidden lg:block" />
-          Collaborate in Real-Time. <br className="hidden lg:block" />
-          <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
-            Ship Faster.
-          </span>
-        </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 text-neutral-900 dark:text-white"
+          >
+            Manage Projects. <br className="hidden lg:block" />
+            Collaborate. <br className="hidden lg:block" />
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+              Ship Faster.
+            </span>
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto mb-10 leading-relaxed"
-        >
-          TaskFlow helps startups, student teams, and organizations streamline collaboration with real-time updates, role-based workspaces, and powerful project management tools.
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl leading-relaxed"
+          >
+            TaskFlow helps startups, student teams, and organizations streamline collaboration with real-time updates, role-based workspaces, and powerful project management tools.
+          </motion.p>
+        </div>
 
+        {/* Buttons Column */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10"
+          className="flex flex-col sm:flex-row lg:flex-col items-center justify-center gap-4 shrink-0 w-full lg:w-auto"
         >
           <Link
             href="/register"
-            className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 dark:bg-white px-8 py-4 text-sm font-semibold text-white dark:text-neutral-950 transition-all hover:bg-neutral-800 dark:hover:bg-neutral-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 w-full sm:w-auto overflow-hidden"
+            className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 dark:bg-white px-8 py-4 text-sm font-semibold text-white dark:text-neutral-950 transition-all hover:bg-neutral-800 dark:hover:bg-neutral-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 w-full sm:w-64 overflow-hidden"
           >
             <span>Create Workspace</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link
             href="#demo"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-white dark:bg-neutral-900/50 backdrop-blur-md px-8 py-4 text-sm font-semibold text-neutral-900 dark:text-white transition-all hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-white/10 dark:hover:border-white/20 w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-white dark:bg-neutral-900/50 backdrop-blur-md px-8 py-4 text-sm font-semibold text-neutral-900 dark:text-white transition-all hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-white/10 dark:hover:border-white/20 w-full sm:w-64"
           >
             <Play className="w-4 h-4 fill-neutral-900 dark:fill-white/80" />
             Watch Demo
@@ -68,18 +72,16 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Background Dashboard Mockup */}
+      {/* Floating Dashboard Mockup */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1400px] px-6 z-0 pointer-events-none mt-10 md:mt-0"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.6, type: "spring", bounce: 0.4 }}
+        className="relative mx-auto max-w-5xl px-6 mt-24 w-full"
       >
-        <div className="opacity-40 dark:opacity-[0.15]">
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
-          <div className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
-          <div className="relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950/80 p-2 overflow-hidden blur-[1px]">
-            {/* Header Bar */}
+        <div className="absolute -inset-1 bg-gradient-to-b from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl opacity-50"></div>
+        <div className="relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl p-2 shadow-2xl overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+          {/* Header Bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-neutral-900/50">
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
