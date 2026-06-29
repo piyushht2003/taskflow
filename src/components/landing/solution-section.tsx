@@ -28,24 +28,24 @@ export function SolutionSection() {
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-white dark:bg-neutral-900 shadow-2xl flex flex-col items-center justify-center p-2 z-20"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-48 md:h-48 rounded-full bg-white dark:bg-neutral-900 shadow-2xl flex flex-col items-center justify-center p-2 z-20"
           >
             {/* Gradient Border effect */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-[2px]">
                <div className="w-full h-full bg-white dark:bg-neutral-900 rounded-full flex flex-col items-center justify-center">
-                 <span className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">01</span>
-                 <span className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Core Engine</span>
+                 <span className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-1">01</span>
+                 <span className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-medium">Core Engine</span>
                </div>
             </div>
           </motion.div>
           
           {/* Connecting Lines and Side Nodes (Visual fluff to match design) */}
-          <div className="absolute top-1/2 left-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-200 dark:via-white/10 to-transparent -translate-x-1/2 -translate-y-1/2 z-10"></div>
+          <div className="hidden md:block absolute top-1/2 left-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-200 dark:via-white/10 to-transparent -translate-x-1/2 -translate-y-1/2 z-10"></div>
           
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex flex-col items-center justify-center z-20">
+          <div className="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex-col items-center justify-center z-20">
              <span className="text-lg font-bold text-neutral-300 dark:text-neutral-600 rotate-[-90deg]">4</span>
           </div>
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex flex-col items-center justify-center z-20">
+          <div className="hidden md:flex absolute top-1/2 right-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex-col items-center justify-center z-20">
              <span className="text-lg font-bold text-neutral-300 dark:text-neutral-600 rotate-[90deg]">0</span>
           </div>
         </div>
