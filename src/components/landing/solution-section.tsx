@@ -1,93 +1,79 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Kanban, Zap, Users, BarChart, Bell, Activity } from "lucide-react";
+import { Sparkles, Brain, Clock, Zap, Target, LineChart, LayoutList, Layers } from "lucide-react";
 
 export function SolutionSection() {
-  const features = [
-    {
-      icon: <Kanban className="w-6 h-6 text-blue-500" />,
-      title: "Real-Time Boards",
-      description: "Drag and drop tasks. Changes instantly reflect across your entire team's screens via WebSockets.",
-      className: "md:col-span-2",
-    },
-    {
-      icon: <Zap className="w-6 h-6 text-yellow-500" />,
-      title: "Lightning Fast",
-      description: "Built on Next.js 15 and Turbopack for sub-millisecond interactions.",
-      className: "md:col-span-1",
-    },
-    {
-      icon: <Users className="w-6 h-6 text-purple-400" />,
-      title: "Role-Based Access",
-      description: "Fine-grained permissions for Owners, Admins, Members, and Guests.",
-      className: "md:col-span-1",
-    },
-    {
-      icon: <BarChart className="w-6 h-6 text-green-400" />,
-      title: "Analytics & Insights",
-      description: "Beautiful charts that automatically track your team's velocity and project health.",
-      className: "md:col-span-1",
-    },
-    {
-      icon: <Activity className="w-6 h-6 text-pink-400" />,
-      title: "Activity Timeline",
-      description: "Keep an audit log of all actions. Know exactly who changed what and when.",
-      className: "md:col-span-1",
-    },
+  const aiFeatures = [
+    { name: "Live Sync", icon: <Layers className="w-3 h-3" /> },
+    { name: "Drag & Drop", icon: <Target className="w-3 h-3" /> },
+    { name: "Workspaces", icon: <Brain className="w-3 h-3" /> },
+    { name: "Role Access", icon: <Clock className="w-3 h-3" /> },
+    { name: "Activity Logs", icon: <Sparkles className="w-3 h-3" /> },
+    { name: "Dark Mode", icon: <LayoutList className="w-3 h-3" /> },
+    { name: "Analytics", icon: <LineChart className="w-3 h-3" /> },
   ];
 
   return (
-    <section id="solutions" className="py-32 bg-white dark:bg-neutral-950 relative border-t border-neutral-200 dark:border-white/5 transition-colors duration-300">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-100/50 dark:from-blue-900/10 to-transparent pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-20">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+    <section id="solutions" className="py-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+        
+        {/* Orbital AI Diagram */}
+        <div className="relative w-full max-w-3xl aspect-[2/1] md:aspect-[3/1] flex items-end justify-center mb-16 mt-8 overflow-hidden">
+          {/* Main Arcs */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-neutral-200 dark:border-white/10"></div>
+          
+          {/* Center Orb */}
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-white dark:bg-neutral-900 shadow-2xl flex flex-col items-center justify-center p-2 z-20"
           >
-            Everything Your Team Needs <br className="hidden md:block"/> In One Workspace
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto"
-          >
-            We've built all the essential tools you need to manage your projects effectively, wrapped in a beautiful, lightning-fast interface.
-          </motion.p>
+            {/* Gradient Border effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-[2px]">
+               <div className="w-full h-full bg-white dark:bg-neutral-900 rounded-full flex flex-col items-center justify-center">
+                 <span className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">01</span>
+                 <span className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Core Engine</span>
+               </div>
+            </div>
+          </motion.div>
+          
+          {/* Connecting Lines and Side Nodes (Visual fluff to match design) */}
+          <div className="absolute top-1/2 left-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-200 dark:via-white/10 to-transparent -translate-x-1/2 -translate-y-1/2 z-10"></div>
+          
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex flex-col items-center justify-center z-20">
+             <span className="text-lg font-bold text-neutral-300 dark:text-neutral-600 rotate-[-90deg]">4</span>
+          </div>
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-16 h-16 rounded-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950 flex flex-col items-center justify-center z-20">
+             <span className="text-lg font-bold text-neutral-300 dark:text-neutral-600 rotate-[90deg]">0</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {features.map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className={`group relative rounded-3xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/40 backdrop-blur-sm p-8 overflow-hidden hover:bg-neutral-50 dark:hover:bg-neutral-900/60 transition-colors shadow-sm dark:shadow-none ${feature.className}`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 dark:from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm dark:shadow-xl">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 tracking-tight">
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            </motion.div>
+        {/* Text Section Below Diagram */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 max-w-lg"
+        >
+          <h2 className="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-4">Your Productivity Engine</h2>
+        </motion.div>
+
+        {/* Feature Badges */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto"
+        >
+          {aiFeatures.map((feature, i) => (
+            <div key={i} className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-full text-xs font-semibold text-neutral-700 dark:text-neutral-300 shadow-sm">
+              {feature.icon} {feature.name}
+            </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

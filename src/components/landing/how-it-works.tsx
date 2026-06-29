@@ -4,16 +4,91 @@ import { motion } from "framer-motion";
 
 export function HowItWorks() {
   const steps = [
-    { number: "01", title: "Create Workspace", description: "Set up your dedicated environment in seconds." },
-    { number: "02", title: "Invite Team Members", description: "Send secure invites to your collaborators." },
-    { number: "03", title: "Assign Roles", description: "Granular access control from Admin to Guest." },
-    { number: "04", title: "Track Progress", description: "Manage tasks across dynamic Kanban boards." },
-    { number: "05", title: "Deliver Faster", description: "Ship your projects on time with full visibility." },
+    { 
+      title: "Create Workspace", 
+      description: "Set up your environment in seconds.",
+      // Pixel House / Castle
+      icon: (
+        <div className="grid grid-cols-7 grid-rows-7 gap-0.5 w-8 h-8">
+          <div className="col-start-4 bg-blue-500"></div>
+          <div className="col-start-3 col-span-3 bg-blue-500"></div>
+          <div className="col-start-2 col-span-5 bg-blue-500"></div>
+          <div className="col-span-7 bg-blue-500"></div>
+          <div className="col-start-2 col-span-5 bg-indigo-500"></div>
+          <div className="col-start-2 col-span-5 bg-indigo-500"></div>
+          <div className="col-start-2 col-span-5 bg-indigo-500"></div>
+        </div>
+      )
+    },
+    { 
+      title: "Invite Team Members", 
+      description: "Send secure invites to collaborators.",
+      // Pixel Person / Hero
+      icon: (
+        <div className="grid grid-cols-7 grid-rows-7 gap-0.5 w-8 h-8">
+          <div className="col-start-3 col-span-3 bg-pink-400"></div>
+          <div className="col-start-2 col-span-5 bg-pink-400"></div>
+          <div className="col-start-3 col-span-3 bg-pink-400"></div>
+          <div className="col-start-4 bg-pink-500"></div>
+          <div className="col-start-2 col-span-5 bg-purple-500"></div>
+          <div className="col-span-7 bg-purple-500"></div>
+          <div className="col-span-7 bg-purple-500"></div>
+        </div>
+      )
+    },
+    { 
+      title: "Assign Roles", 
+      description: "Granular access from Admin to Guest.",
+      // Pixel Shield
+      icon: (
+        <div className="grid grid-cols-7 grid-rows-7 gap-0.5 w-8 h-8">
+          <div className="col-span-7 bg-yellow-500"></div>
+          <div className="col-span-7 bg-yellow-500"></div>
+          <div className="col-span-7 bg-yellow-500"></div>
+          <div className="col-start-2 col-span-5 bg-yellow-500"></div>
+          <div className="col-start-3 col-span-3 bg-yellow-500"></div>
+          <div className="col-start-4 bg-yellow-500"></div>
+        </div>
+      )
+    },
+    { 
+      title: "Track Progress", 
+      description: "Manage tasks across Kanban boards.",
+      // Pixel Sword
+      icon: (
+        <div className="grid grid-cols-7 grid-rows-7 gap-0.5 w-8 h-8">
+          <div className="col-start-7 bg-teal-400"></div>
+          <div className="col-start-6 bg-teal-400"></div>
+          <div className="col-start-5 bg-teal-400"></div>
+          <div className="col-start-4 bg-teal-400"></div>
+          <div className="col-start-3 col-span-3 bg-neutral-500"></div>
+          <div className="col-start-2 bg-neutral-600"></div>
+          <div className="col-start-1 bg-yellow-600"></div>
+        </div>
+      )
+    },
+    { 
+      title: "Deliver Faster", 
+      description: "Ship projects on time with full visibility.",
+      // Pixel Potion
+      icon: (
+        <div className="grid grid-cols-7 grid-rows-7 gap-0.5 w-8 h-8">
+          <div className="col-start-3 col-span-3 bg-neutral-500"></div>
+          <div className="col-start-4 bg-green-400"></div>
+          <div className="col-start-3 col-span-3 bg-neutral-300"></div>
+          <div className="col-start-2 col-span-5 bg-green-500"></div>
+          <div className="col-span-7 bg-green-500"></div>
+          <div className="col-span-7 bg-green-500"></div>
+          <div className="col-start-2 col-span-5 bg-green-600"></div>
+        </div>
+      )
+    },
   ];
 
   return (
-    <section className="py-32 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-white/5 relative transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-32 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-white/5 relative overflow-hidden transition-colors duration-300">
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -26,7 +101,7 @@ export function HowItWorks() {
 
         <div className="relative">
           {/* Connecting line */}
-          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-300 dark:via-white/20 to-transparent hidden lg:block -translate-y-1/2"></div>
+          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-300 dark:via-white/20 to-transparent hidden lg:block -translate-y-[40px]"></div>
           
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {steps.map((step, i) => (
@@ -38,10 +113,10 @@ export function HowItWorks() {
                 transition={{ delay: i * 0.15, duration: 0.6 }}
                 className="relative flex flex-col items-center text-center group"
               >
-                {/* Number Circle */}
-                <div className="w-16 h-16 rounded-full bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 flex items-center justify-center mb-6 relative z-10 group-hover:border-blue-500 transition-colors duration-300 shadow-sm dark:shadow-none">
-                  <span className="text-xl font-bold text-neutral-400 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">{step.number}</span>
-                  <div className="absolute inset-0 rounded-full bg-blue-500/10 dark:bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Icon Container */}
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-neutral-900 border-4 border-neutral-200 dark:border-neutral-800 flex items-center justify-center mb-6 relative z-10 group-hover:border-blue-500 transition-colors duration-300 shadow-sm dark:shadow-none group-hover:-translate-y-2 transform">
+                  {step.icon}
+                  <div className="absolute inset-0 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">{step.title}</h3>

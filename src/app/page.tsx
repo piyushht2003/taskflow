@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero-section";
-import { SocialProof } from "@/components/landing/social-proof";
 import { ProblemSection } from "@/components/landing/problem-section";
 import { SolutionSection } from "@/components/landing/solution-section";
 import { ProductShowcase } from "@/components/landing/product-showcase";
@@ -23,7 +22,6 @@ export default async function LandingPage() {
       
       <main>
         <HeroSection />
-        <SocialProof />
         <ProblemSection />
         <SolutionSection />
         <ProductShowcase />

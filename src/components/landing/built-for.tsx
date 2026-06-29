@@ -1,69 +1,158 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Rocket, GraduationCap, Code2, Briefcase, Globe } from "lucide-react";
+import Link from "next/link";
 
 export function BuiltFor() {
-  const audiences = [
-    {
-      icon: <Rocket className="w-8 h-8 text-orange-500" />,
-      title: "Startups",
-      description: "Move fast, stay aligned, and ship your MVP without getting bogged down by clunky Jira boards.",
-    },
-    {
-      icon: <GraduationCap className="w-8 h-8 text-blue-500" />,
-      title: "Student Teams",
-      description: "Manage group projects easily. Free tier gives you everything you need to ace your finals.",
-    },
-    {
-      icon: <Code2 className="w-8 h-8 text-green-500" />,
-      title: "Hackathons",
-      description: "The perfect weekend warrior tool. Setup in 10 seconds, track tasks instantly.",
-    },
-    {
-      icon: <Briefcase className="w-8 h-8 text-purple-500" />,
-      title: "Small Businesses",
-      description: "Organize client work, track deliverables, and manage your small team efficiently.",
-    },
-    {
-      icon: <Globe className="w-8 h-8 text-teal-500" />,
-      title: "Remote Teams",
-      description: "Bridge the timezone gap with asynchronous updates and a clear source of truth.",
-    },
-  ];
-
   return (
-    <section className="py-32 bg-white dark:bg-neutral-950 relative border-t border-neutral-200 dark:border-white/5 transition-colors duration-300">
+    <section className="py-32 bg-neutral-100 dark:bg-neutral-900 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6"
+            className="text-2xl md:text-4xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6"
           >
-            Built for modern teams
+            Built For All<br />
+            Business Sizes
           </motion.h2>
-          <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto text-lg">Whether you're building the next unicorn or submitting a final project, TaskFlow scales with you.</p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center bg-white dark:bg-neutral-800 p-1 rounded-full border border-neutral-200 dark:border-white/10"
+          >
+            <button className="px-6 py-2 text-sm font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-white rounded-full shadow-sm">Students</button>
+            <button className="px-6 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors rounded-full">Professionals</button>
+          </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {audiences.map((a, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="p-8 rounded-3xl bg-neutral-50 dark:bg-neutral-900/30 border border-neutral-200 dark:border-white/5 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 hover:border-neutral-300 dark:hover:border-white/10 transition-all group shadow-sm dark:shadow-none"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/5 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-sm dark:shadow-none">
-                {a.icon}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Card 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white dark:bg-neutral-950 rounded-3xl p-8 border border-neutral-200 dark:border-white/10 flex flex-col"
+          >
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-md bg-neutral-100 dark:bg-neutral-800 flex flex-col items-center justify-center border border-neutral-300 dark:border-neutral-700">
+                {/* Pixel Book/Apple */}
+                <div className="grid grid-cols-3 grid-rows-3 gap-[1px] w-4 h-4">
+                  <div className="col-start-2 bg-red-500"></div>
+                  <div className="col-start-1 col-span-3 bg-red-500"></div>
+                  <div className="col-start-1 col-span-3 bg-red-500"></div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">{a.title}</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">{a.description}</p>
-            </motion.div>
-          ))}
+              Students
+            </h3>
+            <p className="text-xs text-neutral-500 mb-8">For individuals and class group projects</p>
+            <div className="mb-8 flex flex-col gap-1">
+              <span className="text-2xl font-extrabold text-neutral-900 dark:text-white">Learn & Grow</span>
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">100% Free Open-Source</span>
+            </div>
+            <Link href="/register" className="w-full py-3 bg-neutral-900 dark:bg-neutral-800 text-white text-sm font-semibold rounded-lg text-center hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors mb-8">
+              Start For Free
+            </Link>
+            <div className="mt-auto">
+              <p className="text-xs font-bold text-neutral-900 dark:text-white mb-4">What's included:</p>
+              <ul className="space-y-3">
+                {["Unlimited personal tasks", "Basic Kanban boards", "Standard priority sorting", "Single-device sync", "Community forums"].map((f, i) => (
+                  <li key={i} className="text-xs text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
+                    <div className="w-1 h-1 bg-neutral-400 dark:bg-neutral-600 rounded-full"></div>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Card 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="bg-white dark:bg-neutral-950 rounded-3xl p-8 border border-neutral-200 dark:border-white/10 flex flex-col"
+          >
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-1 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-md bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center border border-neutral-300 dark:border-neutral-700">
+                {/* Pixel Coffee Cup */}
+                <div className="grid grid-cols-4 grid-rows-3 gap-[1px] w-4 h-3">
+                   <div className="col-start-1 col-span-3 bg-neutral-800 dark:bg-neutral-300"></div>
+                   <div className="col-start-1 col-span-3 bg-neutral-800 dark:bg-neutral-300"></div>
+                   <div className="col-start-2 col-span-1 bg-neutral-800 dark:bg-neutral-300"></div>
+                   <div className="col-start-4 row-start-1 row-span-2 bg-neutral-400 dark:bg-neutral-600"></div>
+                </div>
+              </div>
+              Freelancers
+            </h3>
+            <p className="text-xs text-neutral-500 mb-8">For solo professionals managing clients</p>
+            <div className="mb-8 flex flex-col gap-1">
+              <span className="text-2xl font-extrabold text-neutral-900 dark:text-white">Boost Output</span>
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">Streamline client work</span>
+            </div>
+            <Link href="/register" className="w-full py-3 bg-neutral-900 dark:bg-neutral-800 text-white text-sm font-semibold rounded-lg text-center hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors mb-8">
+              Start Free Trial
+            </Link>
+            <div className="mt-auto">
+              <p className="text-xs font-bold text-neutral-900 dark:text-white mb-4">What's included:</p>
+              <ul className="space-y-3">
+                {["Multiple project workspaces", "Client view permissions", "Smart recurring tasks", "Cross-platform realtime sync", "Email support"].map((f, i) => (
+                  <li key={i} className="text-xs text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
+                    <div className="w-1 h-1 bg-neutral-400 dark:bg-neutral-600 rounded-full"></div>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Card 3 (Highlighted) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="bg-neutral-900 dark:bg-neutral-800 rounded-3xl p-8 border border-neutral-800 dark:border-neutral-700 flex flex-col relative overflow-hidden text-white"
+          >
+             {/* Corner Decoration */}
+             <div className="absolute top-0 right-0 w-16 h-16 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwdjIwaDIwdjIwaDIwdjIwaDIwdjIwaDIwVjB6Ii8+PC9zdmc+')] bg-cover bg-no-repeat"></div>
+             
+            <h3 className="text-lg font-bold mb-1 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-md bg-neutral-800 dark:bg-neutral-950 flex flex-col items-center justify-center border border-neutral-700">
+                {/* Pixel Crown */}
+                <div className="grid grid-cols-5 grid-rows-3 gap-[1px] w-5 h-3">
+                  <div className="col-start-1 bg-yellow-400"></div><div className="col-start-3 bg-yellow-400"></div><div className="col-start-5 bg-yellow-400"></div>
+                  <div className="col-span-5 bg-yellow-400"></div>
+                  <div className="col-span-5 bg-yellow-500"></div>
+                </div>
+              </div>
+              Startups & Teams
+            </h3>
+            <p className="text-xs text-neutral-400 mb-8">Businesses that collaborate daily</p>
+            <div className="mb-8 flex flex-col gap-1">
+              <span className="text-2xl font-extrabold">Scale Workflow</span>
+              <span className="text-sm text-yellow-400 font-medium">Enterprise-grade tools</span>
+            </div>
+            <Link href="/register" className="w-full py-3 bg-white text-neutral-900 text-sm font-semibold rounded-lg text-center hover:bg-neutral-100 transition-colors mb-8">
+              Create Team Workspace
+            </Link>
+            <div className="mt-auto">
+              <p className="text-xs font-bold mb-4">What's included:</p>
+              <ul className="space-y-3">
+                {["Unlimited team members", "Role-based access control", "Real-time project tracking", "Admin audit logs & reporting", "Open-source codebase"].map((f, i) => (
+                  <li key={i} className="text-xs text-neutral-300 flex items-center gap-2">
+                    <div className="w-1 h-1 bg-neutral-500 rounded-full"></div>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

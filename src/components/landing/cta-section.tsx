@@ -11,7 +11,25 @@ export function CTASection() {
       <div className="absolute inset-0 bg-blue-50 dark:bg-neutral-950"></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-blue-600/30 to-purple-600/30 blur-[100px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none"></div>
       
-      <div className="mx-auto max-w-4xl px-6 relative z-10 text-center">
+      <div className="mx-auto max-w-4xl px-6 relative z-10 text-center flex flex-col items-center">
+        {/* Pixel Art Treasure Chest */}
+        <motion.div 
+          animate={{ y: [0, -10, 0] }} 
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          className="mb-8"
+        >
+          <div className="grid grid-cols-8 grid-rows-7 gap-[2px] w-16 h-14 opacity-90 drop-shadow-xl">
+             {/* Chest Lid */}
+             <div className="col-start-2 col-span-6 bg-yellow-600"></div>
+             <div className="col-span-8 bg-yellow-500"></div>
+             <div className="col-span-8 bg-yellow-500"></div>
+             {/* Chest Base & Lock */}
+             <div className="col-span-8 bg-yellow-700"></div>
+             <div className="col-span-3 bg-yellow-600"></div><div className="col-span-2 bg-neutral-300"></div><div className="col-span-3 bg-yellow-600"></div>
+             <div className="col-span-3 bg-yellow-600"></div><div className="col-span-2 bg-neutral-400"></div><div className="col-span-3 bg-yellow-600"></div>
+             <div className="col-start-2 col-span-6 bg-yellow-700"></div>
+          </div>
+        </motion.div>
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

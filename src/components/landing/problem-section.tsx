@@ -23,8 +23,22 @@ export function ProblemSection() {
   ];
 
   return (
-    <section className="py-24 relative">
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-red-500/10 dark:bg-red-500/5 blur-[100px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+    <section className="py-24 relative overflow-hidden bg-white dark:bg-neutral-950">
+      {/* Background Pixel Bug Illustration */}
+      <div className="absolute top-1/2 left-0 w-full h-full pointer-events-none -translate-y-1/2 opacity-10 dark:opacity-20 flex items-center justify-start -ml-32">
+        <div className="grid grid-cols-11 grid-rows-10 gap-2 w-96 h-96">
+          <div className="col-start-3 bg-red-500"></div><div className="col-start-9 bg-red-500"></div>
+          <div className="col-start-4 bg-red-500"></div><div className="col-start-8 bg-red-500"></div>
+          <div className="col-span-11 bg-red-500 col-start-1"></div>
+          <div className="col-span-3 bg-red-500 col-start-1"></div><div className="col-start-4 bg-transparent"></div><div className="col-span-3 bg-red-500 col-start-5"></div><div className="col-start-8 bg-transparent"></div><div className="col-span-3 bg-red-500 col-start-9"></div>
+          <div className="col-span-11 bg-red-500 col-start-1"></div>
+          <div className="col-start-3 bg-red-500"></div><div className="col-span-5 bg-red-500 col-start-4"></div><div className="col-start-9 bg-red-500"></div>
+          <div className="col-start-2 bg-red-500"></div><div className="col-start-10 bg-red-500"></div>
+          <div className="col-start-1 bg-red-500"></div><div className="col-start-11 bg-red-500"></div>
+          <div className="col-start-4 bg-red-500"></div><div className="col-start-8 bg-red-500"></div>
+          <div className="col-start-3 bg-red-500"></div><div className="col-start-9 bg-red-500"></div>
+        </div>
+      </div>
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
