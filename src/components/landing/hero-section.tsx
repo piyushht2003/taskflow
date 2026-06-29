@@ -71,14 +71,15 @@ export function HeroSection() {
       {/* Background Dashboard Mockup */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 0.15, scale: 1 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1400px] px-6 z-0 pointer-events-none mt-10 md:mt-0"
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
-        <div className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
-        <div className="relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950/80 p-2 overflow-hidden blur-[1px]">
-          {/* Header Bar */}
+        <div className="opacity-40 dark:opacity-[0.15]">
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
+          <div className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-white dark:from-neutral-950 dark:to-neutral-950 z-10 pointer-events-none opacity-90 h-[105%] w-[105%] -left-2 -top-2"></div>
+          <div className="relative rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-950/80 p-2 overflow-hidden blur-[1px]">
+            {/* Header Bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-neutral-900/50">
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
