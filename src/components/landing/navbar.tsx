@@ -21,8 +21,7 @@ export function LandingNavbar({ isLoggedIn }: { isLoggedIn: boolean }) {
   const navLinks = [
     { name: "Features", href: "#features" },
     { name: "Solutions", href: "#solutions" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "About", href: "#about" },
+    { name: "GitHub", href: "https://github.com/piyushht2003/taskflow" },
   ];
 
   return (

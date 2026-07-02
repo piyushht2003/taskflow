@@ -53,8 +53,8 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
           >
-            <span className="flex h-2 w-2 rounded-full bg-blue-500"></span>
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">Built for Students, Freelancers & Teams</span>
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+            <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">100% Free & Open-Source</span>
           </motion.div>
 
           <motion.h1
